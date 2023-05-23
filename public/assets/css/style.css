@@ -1,0 +1,84 @@
+* {
+    padding: 0;
+    margin: 30px 0px 0px 0px;
+    box-sizing: border-box;
+}
+
+.row {
+    background-color: white;
+    border-radius: 30px;
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    font-family: 'Poppins';
+}
+
+.login img {
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+}
+
+h1 {
+    color: #1F92D1;
+    font-weight: 600;
+}
+
+.bg-imageclr {
+    background-color: #E7F0FF;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+}
+
+.inp {
+    height: 45px;
+    width: 75%;
+    border: 1px solid;
+    outline: none;
+    border-radius: 10px;
+    font-family: 'Poppins';
+
+}
+
+.frgt-pswd {
+    font-size: 12px;
+    color: #1a73a4;
+    margin-left: 43%;
+}
+
+.btn1 {
+    height: 45px;
+    width: 75%;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    color: white;
+    background-color: #1F92D1;
+    font-weight: 600;
+    font-family: 'Poppins';
+}
+
+.btn1:hover {
+    background-color: #1a73a4;
+}
+
+.inp-otp {
+    width: 45px;
+    height: 45px;
+    border: solid 1px;
+}
+
+.auth-par {
+    font-size: 13px;
+    margin-top: -20px;
+}
+
+.Resend-otp {
+    color: #1a73a4;
+}
+
+.spacing-top {
+    margin-top: 10%;
+}
+
+.spacing-top1 {
+    margin-top: 25%;
+}
