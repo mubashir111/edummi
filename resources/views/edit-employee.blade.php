@@ -1,4 +1,4 @@
-@include('layout.inner2-header')
+@include('layout.header')
 
 
         <!-- ============================================================== -->
@@ -70,7 +70,7 @@
 
                                         <div class="form-group col-xl-6">
                                             <label>PASSWORD *</label>
-                                            <input type="password" autocomplete="new-password" value="" name="password" class="form-control" placeholder="Enter Your Name" required>
+                                            <input type="password" autocomplete="new-password" value="" name="password" class="form-control" placeholder="Enter Your Name" >
                                         </div>
                                     </div>
 

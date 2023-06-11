@@ -1,0 +1,233 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use DB;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\leadsModdel;
+use App\Models\deparmentModel;
+use App\Models\LeadsstatusModal;
+
+class leadsController extends Controller
+{
+      public function index()
+    {
+         $user = auth()->user()->user_id;
+         $departments = deparmentModel::where('created_by',$user)->get();
+
+
+       
+        $userRole = auth()->user()->role;
+        if ($userRole === "superadmin") {
+            $leads = leadsModdel::where('assigned_status',1)->where('referred_by',auth()->user()->id)->orWhere('manager_id',auth()->user()->id)->get();
+
+        } elseif ($userRole === "Branch_Owner") {
+            $leads = leadsModdel::where('assigned_status',1)->where('referred_by',auth()->user()->id)->orWhere('manager_id',auth()->user()->id)->get();
+
+        } else{
+           
+           $leads = leadsModdel::where('assigned_status',1)->where('referred_by',auth()->user()->id)->get();
+        }
+
+       
+         return view('manage-leads',['leads'=> $leads,'departments' => $departments]);
+
+    }
+
+
+   public function signedlead()
+{
+    $userRole = auth()->user()->role;
+    if ($userRole === "superadmin") {
+        $leads = leadsModdel::where('assigned_status', 2)->where(function ($query) {
+                $query->where('referred_by', auth()->user()->id)
+                    ->orWhere('manager_id', auth()->user()->id);
+            })
+            ->where('status', '!=', 5)
+            ->get();
+            
+    } elseif ($userRole === "Branch_Owner") {
+        $leads = leadsModdel::where('assigned_status', 2)
+            ->where(function ($query) {
+                $query->where('referred_by', auth()->user()->id)
+                    ->orWhere('manager_id', auth()->user()->id);
+            })
+            ->where('status', '!=', 5)
+            ->get();
+    }elseif($userRole === "department_employee"){
+
+         $leads = leadsModdel::where('assigned_status', 2)
+            ->where('assigned_to_manager', auth()->user()->user_id)
+            ->get();
+    }
+     else {
+        $leads = leadsModdel::where('assigned_status', 2)
+            ->where('assigned_to', auth()->user()->user_id)
+            ->where('status', '!=', 5)
+            ->get();
+    }
+
+    $leadstatus = LeadsstatusModal::all();
+
+    return view('signed-leads', compact('leads', 'leadstatus'));
+}
+
+
+
+   public function assignto(Request $request)
+{
+    $department = deparmentModel::where('id', $request->department)->first();
+    $employee = User::where('user_id',$request->employee)->first();
+
+    $leads = leadsModdel::where('assigned_status', 1)
+        ->where(function ($query) {
+            $query->where('referred_by', auth()->user()->id)
+                ->orWhere('manager_id', auth()->user()->id);
+        })
+        ->limit($request->limit)
+        ->get();
+
+    foreach ($leads as $lead) {
+        
+        $lead->assigned_to = $request->employee;
+        $lead->department = $request->department;
+        $lead->current_status = "Hand over to " . $department->department_name . " (" . $employee->name . ")";
+         $lead->assigned_status = 2;
+        $lead->save();
+    }
+
+    return redirect()->back()->with('success', 'Lead assigned successfully');
+
+}
+
+
+ public function manger_assignto(Request $request)
+{
+    $department = deparmentModel::where('id', $request->department)->first();
+    $employee = User::where('user_id',$request->employee)->first();
+
+        $leads = leadsModdel::where('maanager_assigned_status', 1)
+        ->where('status', 5)
+        ->limit($request->limit)
+        ->get();
+
+    foreach ($leads as $lead) {
+        
+        $lead->assigned_to_manager = $request->employee;
+        $lead->manager_department = $request->department;
+        $lead->current_status = "Hand over to " . $department->department_name . " (" . $employee->name . ")";
+         $lead->maanager_assigned_status = 2;
+        $lead->save();
+    }
+
+    return redirect()->back()->with('success', 'Lead assigned successfully');
+
+
+}
+
+public function statushange(Request $request)
+{
+
+   
+
+  $lead = leadsModdel::where('id',$request->status_lead_id)->first();
+
+  if($lead){
+
+    $lead->status = $request->status_name;
+   
+   if($request->description !=null){
+
+    $lead->discription = $request->description;
+
+   }
+    
+
+    $lead->save();
+
+
+  }
+
+  return redirect()->back()->with('success', 'Lead status has changed');
+
+    
+}
+
+public function convertedlead(Request $request)
+{
+
+      $user = auth()->user()->user_id;
+         $departments = deparmentModel::where('created_by',$user)->get();
+    
+     $userRole = auth()->user()->role;
+        if ($userRole === "superadmin") {
+            $leads = leadsModdel::where('status',5)->get();
+        } elseif ($userRole === "Branch_Owner") {
+            $leads = leadsModdel::where('status',5)->where('referred_by',auth()->user()->id)->orWhere('manager_id',auth()->user()->id)->get();
+
+        } else{
+           
+           $leads = leadsModdel::where('status',5)->where('assigned_to',auth()->user()->user_id)->get();
+        }
+
+        $leadstatus = LeadsstatusModal::all();
+
+       
+         return view('converted-leads',compact('leads','leadstatus','departments'));
+
+}
+
+public function editview(Request $request){
+
+     $lead = leadsModdel::where('id',$request->edit_id)->first();
+      return response()->json(['lead' => $lead]);
+
+}
+
+public function storedata(Request $request){
+
+   $lead = leadsModdel::where('id',$request->edit_id)->first(); 
+    $lead->name = $request->first_name;
+    $lead->phone = $request->number;
+    $lead->email = $request->email;
+    $lead->address = $request->address;
+
+    $lead->save();
+
+    return back();
+}
+
+public function store(Request $request){
+
+    $lead = new leadsModdel();
+
+    $lead->name = $request->first_name;
+    $lead->phone = $request->number;
+    $lead->email = $request->email;
+    $lead->address = $request->address;
+    $lead->referred_by = Auth::user()->id;
+                $lead->referral_role_type = Auth::user()->role;
+                 $lead->manager_id = Auth::user()->referred_by;
+
+    $lead->save();
+
+    return redirect()->back()->with('success', 'Lead created successfully');
+
+     
+
+}
+
+public function destroy($id)
+    {
+        
+          $lead = leadsModdel::findOrFail($id);
+     $lead->delete();
+      return response()->json(['status' => 'success', 'message' => 'lead has been removed ']);
+    }
+
+
+
+}
+

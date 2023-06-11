@@ -98,6 +98,8 @@ class representatives extends Controller
      */
     public function destroy($id)
     {
-        //
+        $representatives = representativesModel::findOrFail($id);
+     $representatives->delete();
+      return response()->json(['status' => 'success', 'message' => 'representative has been removed ']);
     }
 }

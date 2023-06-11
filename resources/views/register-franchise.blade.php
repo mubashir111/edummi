@@ -1,8 +1,221 @@
-@include('layout.inner-header')
+@include('layout.header')
 
 <!-- ============================================================== -->
 <!-- Start right Content here -->
 <!-- ============================================================== -->
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    var api_token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfZW1haWwiOiJtdWJhNHNoaXJAZ21haWwuY29tIiwiYXBpX3Rva2VuIjoiWFFUZ0dyWmVpdU5jMkl3UmVTUDI0UEFTTkd0Ylk1M3BFSFMyWWlLaGJraE43Wm5rdjlmaGdBYVA1cTJ2cDdGTWt3MCJ9LCJleHAiOjE2ODY0ODQwNjd9.FXzixDkqriLxsyLVfKCwSrEzSU-mX2KVnccKSlL3U_Q";
+     
+    $.ajax({
+      url: "https://www.universal-tutorial.com/api/countries",
+      type: "GET",
+      headers: {
+        "Accept": "application/json",
+        "Authorization": api_token
+      },
+      success: function(response) {
+       
+
+        // Iterate over the countries array
+        for (var i = 0; i < response.length; i++) {
+          var country = response[i];
+          var countryName = country.country_name;
+          var country_code = country.country_phone_code;
+          
+
+          $('#country_of_birth').append($('<option>', {
+            value: countryName,
+            text: countryName
+          }));
+
+         
+
+
+        }
+
+
+      },
+      error: function(error) {
+        console.error(error);
+      }
+    });
+
+   
+
+   
+
+   
+    // Event handler for country dropdown change
+        $('#country_of_birth').on('change', function() {
+            var country = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/states/"+country;
+          
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+
+
+                                $('#stateDropdown').empty();
+
+                                for (var i = 0; i < response.length; i++) {
+                      var state = response[i];
+                      var stateName = state.state_name;
+                      
+                      
+                      
+
+                      $('#stateDropdown').append($('<option>', {
+                        value: stateName,
+                        text: stateName
+                      }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+
+            
+        });
+
+
+
+         $('#stateDropdown').on('change', function() {
+            var selectedState = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/cities/"+selectedState;
+          
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+
+                                   
+
+                                   $('#mailing_city').empty();
+
+                                for (var i = 0; i < response.length; i++) {
+                      var city = response[i];
+                      var city_name = city.city_name;
+                      
+                      
+                      
+
+                      $('#mailing_city').append($('<option>', {
+                        value: city_name,
+                        text: city_name
+                      }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+
+
+   //permenent_country
+
+          // Event handler for country dropdown change
+        $('#permenent_country').on('change', function() {
+            var country = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/states/"+country;
+          
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+                                
+                                $('#permentstateDropdown').empty();
+
+                                for (var i = 0; i < response.length; i++) {
+                      var state = response[i];
+                      var stateName = state.state_name;
+                      
+                      
+                      
+
+                      $('#permentstateDropdown').append($('<option>', {
+                        value: stateName,
+                        text: stateName
+                      }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+
+            
+        });
+
+         $('#permentstateDropdown').on('change', function() {
+            var selectedState = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/cities/"+selectedState;
+          
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+
+                                   $('#permenent_city').empty();
+                                for (var i = 0; i < response.length; i++) {
+                      var city = response[i];
+                      var city_name = city.city_name;
+                      
+                      
+                      
+
+                      $('#permenent_city').append($('<option>', {
+                        value: city_name,
+                        text: city_name
+                      }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+
+
+
+  });
+</script>
 <div class="main-content">
 
     <div class="page-content">
@@ -48,7 +261,7 @@
                                 <div class="form-group col-xl-4">
                                     <label>ADDRESS</label>
                                     <textarea name="franchise_address" class="form-control" style="height: 100px;"
-                                    placeholder="Enter Destination" >
+                                    placeholder="Enter Destination" required>
                                     {{ old('franchise_address') }}
                                 </textarea>
                             </div>
@@ -57,7 +270,7 @@
                                 <label>NAME(FRANCHISE OWNER)</label>
                                 <input  name="head_name" type="text" class="form-control"
                                 placeholder="Franchise head name" required value="{{ old('head_name') }}">
-                                <label>LABAL</label>
+                                <label>LEBAL</label>
                                 <select class="form-control" name="franchise_label">
                                     <option value="">Select</option>
                                     <option value="Green Label"{{ old('franchise_label') == 'Green Label'? 'selected' : ''  }}>Green Label</option>
@@ -68,11 +281,12 @@
 
                             <div class="form-group col-xl-4">
                                 <label>COUNTRY</label>
-                                <select name="franchise_country" class="form-control" value="{{ old('franchise_country') }}" required>
-                                    <option value="india">India</option>
+                                <select id="country_of_birth" name="franchise_country" class="form-control" value="{{ old('franchise_country') }}" required>
+                                   <option>Select</option>
+
                                 </select>
-                                <label class="">STATE</label>
-                                <select name="franchise_state" class="form-control" value="{{ old('franchise_state') }}" required>
+                                <label   class="">STATE</label>
+                                <select id="stateDropdown" name="franchise_state" class="form-control" value="{{ old('franchise_state') }}" required>
                                     <option>Select</option>
                                 </select>
                             </div>
@@ -99,7 +313,7 @@
 
                             <div class="form-group col-xl-4">
                                 <label>CITY</label>
-                                <select name="franchise_city" class="form-control" value="{{ old('franchise_city') }}" required>
+                                <select id="mailing_city" name="franchise_city" class="form-control" value="{{ old('franchise_city') }}" required>
                                     <option>Select</option>
                                 </select>
                             </div>
@@ -308,4 +522,4 @@ $(document).ready(function() {
 </script>
 
 
-@include('layout.inner-footer')
+@include('layout.footer')

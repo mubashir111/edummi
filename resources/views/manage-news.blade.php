@@ -17,7 +17,7 @@
                                     News</span></button>
                         </div>
                     </div>
-                    <form method="POST" action="{{ route('excel') }}" enctype="multipart/form-data">
+                   <!--  <form method="POST" action="{{ route('excel') }}" enctype="multipart/form-data">
     @csrf
     <input type="file" name="csv_file">
     <button type="submit">Upload</button>
@@ -27,7 +27,7 @@
     @csrf
     <input type="file" name="csv_file">
     <button type="submit">Upload</button>
-</form>
+</form> -->
 
                     <div id="myModal" class="modal">
 
@@ -82,6 +82,61 @@
                         </div>
 
                     </div>
+
+                     <script type="text/javascript">
+               
+                function deletefn(id){
+    
+    var id = id;
+    var url = '{{ route("news.destroy", ":id") }}';
+    url = url.replace(':id', id);
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You are about to delete this news.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Delete it!',
+        cancelButtonText: 'No, cancel!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: 'DELETE', // Use DELETE method for deleting a resource
+                url: url,
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    console.log(response);
+
+                    if (response.status === 'success') {
+                        Swal.fire(
+                            'Deleted!',
+                            'news has been deleted.',
+                            'success'
+                        );
+                        location.reload();
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            'Failed to delete news.',
+                            'error'
+                        );
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        } else {
+            $(this).prop('checked', !$(this).is(':checked'));
+        }
+    });
+}
+
+
+           </script>
+
                     <p class="subhead mt-2"><i class="mdi mdi-24px mdi-update"></i>Recents</p>
                     <div class="row">
                         
@@ -89,7 +144,14 @@
                          @foreach ($news as $news)
                         <div class="col-xl-3 col-sm-6">
                             <div class="card mini-stat ">
+
                                 <div class="card-body mini-stat-img1">
+                                    <div style="text-align: right;">
+                                        <button style="border: solid 1px;border-radius: 5px;" onclick="deletefn({{$news->id}})" delete-id="{{ $news->id}}"><span
+                                                            class="mdi mdi-delete"></span></button>
+                                    </div>
+                                    
+
                                     <div class="mini-stat-icon1">
                                         <i class='fas fa-laptop' style="background-color: #8fcaea;"></i>
                                     </div>

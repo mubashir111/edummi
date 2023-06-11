@@ -1,38 +1,39 @@
-@include('layout.inner-header')
+@include('layout.header')
  <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
         <div class="main-content">
 
-            <script type="text/javascript">
-                        $(document).ready(function() {
-
-                             var i=2;
-                        }
-                      
-                        </script>
+          
 
 
-            <div class="page-content">
-                <div class="container-fluid">
-                    <div class="row">
+            <div class="page-content p-0">
+                <div class="container-fluid p-0">
+                    <!-- <div class="row">
                         <div class="col-xl-12">
                             <h5>Course Finder</h5>
                         </div>
 
                         
-                    </div>
+                    </div> -->
+
+                    <iframe id="coursefinder_iframe" src="" style="width:100%;height: 100vh;"></iframe>
 
                     <div id="myModal" class="modal">
-
+                        
                         <!-- Modal content -->
                         <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 style="color: #000; font-weight: bolder;">ADD NEW COURSE FINDER</h5>
+                                <span class="close">&times;</span>
+                            </div>
                             <div class="modal-body">
+                                 
 
                                  <form action="{{ route('course-finder.store') }}" method="post" enctype="multipart/form-data">
 
                         @csrf
-                                <div class="row mt-4">
+                                <div class="row ">
                                     <div class="form-group col-xl-12">
                                         <label>LABEL</label>
                                         <input name="label" type="text" class="form-control" placeholder="Enter Label" required>
@@ -100,5 +101,5 @@
 
     
 
-    @include('layout.inner-footer')
+    @include('layout.footer')
 

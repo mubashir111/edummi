@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -15,9 +15,11 @@ class staffController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+    {   
+
+         $user_id = auth()->user()->id;
         
-          $staff = User::where('role', 'Sales_Staff')->get();
+          $staff = User::where('role', 'Sales_Staff')->where('referred_by',$user_id)->get();
          return view('manage-staff', ['staff' => $staff]);
     }
 
@@ -39,13 +41,49 @@ class staffController extends Controller
      */
     public function store(Request $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'Sales_Staff',
-            'created_at' => Carbon::now(),
-        ]);
+
+         // $user_id = str_pad(rand(0, 99999), 5, '0', STR_PAD_LEFT);
+         $user_id = "ST" . str_pad(rand(0, 99999), 5, '0', STR_PAD_LEFT);
+
+        $users = User::where('user_id', $user_id)->first();
+
+    if($users){
+        // If the franchise_id already exists, generate a new one and check again
+        return $this->store();
+    }
+
+     // Check if email already exists
+    $user = User::where('email', $request->email_staff)->first();
+    if ($user){
+
+        
+        return redirect()->back()->withInput($request->all())->with('error', 'Email already exists!');
+
+    }
+
+    
+     
+
+       $staffrefferdby = auth()->user()->id;
+    // dd($staffrefferdby);
+
+
+       $staffrefferdby_role = auth()->user()->role;
+      
+
+        $user = new User();
+        $user->name = $request->name;
+         $user->email = $request->email_staff;
+          $user->password = $request->password_staff;
+           $user->role = 'Sales_Staff';
+            $user->user_id = $user_id;
+             $user->referred_role_type = $staffrefferdby_role;
+              $user->referred_by = $staffrefferdby;
+               
+               $user->save();
+
+
+       
 
          return back();
     }
@@ -106,6 +144,8 @@ class staffController extends Controller
      */
     public function destroy($id)
     {
-        //
+          $staff = User::findOrFail($id);
+     $staff->delete();
+      return response()->json(['status' => 'success', 'message' => 'staff has been removed ']);
     }
 }

@@ -24,39 +24,76 @@
 
                                 
 
-                                <main class="msger-chat">
-    @foreach ($messages as $messages)
-       <div class="msg right-msg" messege_id="{{$messages->id}}">
-            <div class="msg-bubble">
-                <div class="msg-info">
-                    <div class="msg-info-time">{{ $messages->created_at }}</div>
-                </div>
-                <div class="msg-text">
-                    {{ $messages->content ?? '' }}
-                    @if ($messages->attachment)
-                        <img src="../{{ $messages->attachment }}" class="img-fluid" style="max-width:420px;">
-                    @endif
-                </div>
-            </div>
-        </div>
-
-       @if ($messages->response_message != null || $messages->response_attachment != null)
-    <div class="msg left-msg" >
+                              <main class="msger-chat">
+    @foreach ($messages as $message)
+    <div class="msg right-msg" message_id="{{$message->id}}">
         <div class="msg-bubble">
             <div class="msg-info">
-                <div class="msg-info-time">{{ $messages->updated_at }}</div>
+                <div class="msg-info-time">{{ $message->created_at }}</div>
             </div>
             <div class="msg-text">
-                {{ $messages->response_message ?? '' }}
-                @if ($messages->response_attachment)
-                    <img src="../{{ $messages->response_attachment }}" class="img-fluid" style="max-width:420px;">
+                {{ $message->content ?? '' }}
+                @if ($message->attachment)
+                <img src="../{{ $message->attachment }}" class="img-fluid" style="max-width:420px;">
                 @endif
             </div>
         </div>
     </div>
-@endif
+
+    @if ($message->response_message != null || $message->response_attachment != null)
+    <div class="msg left-msg" message_id="{{$message->id}}">
+        <div class="msg-bubble">
+            <div class="msg-info">
+                <div class="msg-info-time">{{ $message->updated_at }}</div>
+            </div>
+            <div class="msg-text">
+                @if ($message->response_message !== null)
+                @foreach (json_decode($message->response_message) as $responseMessage)
+                {{ $responseMessage }} <br>
+                @endforeach
+                @endif
+
+                @if ($message->response_attachment !== null)
+                @foreach (json_decode($message->response_attachment) as $responseAttachment)
+                <?php $extension = pathinfo($responseAttachment, PATHINFO_EXTENSION); ?>
+
+                @switch($extension)
+                @case('jpg')
+                @case('jpeg')
+                @case('png')
+                @case('webp')
+                @case('gif')
+                <a href="../{{ $responseAttachment }}" target="_blank">
+                    <img src="{{ asset($responseAttachment) }}" class="img-fluid" style="max-width:320px;">
+                </a>
+                @break
+                @case('pdf')
+                <!-- Display PDF icon or link -->
+                <a href="../{{ $responseAttachment }}" target="_blank">View PDF ({{ $responseAttachment }})</a>
+                @break
+                @case('csv')
+                <!-- Display CSV icon or link -->
+                <a href="../{{ $responseAttachment }}" target="_blank">View CSV ({{ $responseAttachment }})</a>
+                @break
+                @case('xls')
+                @case('xlsx')
+                <!-- Display Excel icon or link -->
+                <a href="../{{ $responseAttachment }}" target="_blank">View Excel ({{ $responseAttachment }})</a>
+                @break
+                @default
+                <!-- Display generic document icon or link -->
+                <a href="../{{ $responseAttachment }}" target="_blank">View Document ({{ $responseAttachment }})</a>
+                @endswitch
+                <br>
+                @endforeach
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
     @endforeach
 </main>
+
 
 
                                 <form class="msger-inputarea">

@@ -15,7 +15,7 @@
                            
                     <div class="row">
 
-
+                      
 
 
                         <div class="col-xl-12 col-sm-12">
@@ -26,7 +26,7 @@
                                             <tr>
                                                 <th>SL NO.</th>
                                                 <th>USER</th>
-                                                <th>AGENT</th>
+                                                <th>ROLE</th>
                                                 <th>REQUESTED ON</th>
                                                 <th>UPDATED</th>
                                                 <th>STATUS</th>
@@ -42,14 +42,14 @@
                                         @foreach ($tickets as $ticket)
                                             <tr>
                                                 <td>{{$i++}}</td>
-                                                <td>{{$ticket->sender_id}}</td>
-                                                <td>{{$ticket->id}}</td>
+                                               <td>{{$ticket->user->name}} ({{$ticket->user->email}})</td>
+                                                <td>{{$ticket->user->role}}</td>
                                                 <td>{{$ticket->created_at}}</td>
                                                 <td>{{$ticket->updated_at}}</td>
                                                 @if ($ticket->status == 'rejected')
                                                     <td class="text-center" style="color: red;">Rejected</td>
-                                                @elseif ($ticket->status == 'success')
-                                                    <td class="text-center" style="color: green;">Success</td>
+                                                @elseif ($ticket->status == 'verified')
+                                                    <td class="text-center" style="color: green;">verified</td>
                                                 @else
                                                     <td class="text-center" style="color: orange;">Pending</td>
                                                 @endif

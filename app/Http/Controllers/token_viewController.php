@@ -7,6 +7,10 @@ use App\Models\tokenModel;
 use App\Models\messegecontroller;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use App\Notifications\token_status;
+use App\Models\NotificationModel;
+use Illuminate\Support\Facades\Notification;
+use App\Models\User;
 
 class token_viewController extends Controller 
 {
@@ -17,9 +21,30 @@ class token_viewController extends Controller
      */
    public function index()
 {
-    $tickets = messegecontroller::all();
+
+
+        $userRole = auth()->user()->role;
+        $user_id =  auth()->user()->id;
+
+        if ($userRole === "superadmin") {
+             $tickets = messegecontroller::orderByDesc('created_at')->with('user')->get();
+        } elseif ($userRole === "Branch_Owner") {
+            $tickets = messegecontroller::where('recipient_id',auth()->user()->id)->with('user')->orderByDesc('created_at')->get();
+
+        } else{
+           
+           $tickets = messegecontroller::where('recipient_id',auth()->user()->id)->with('user')->orderByDesc('created_at')->get();
+        }
+
+
+
+        $notification= NotificationModel::where('type', 'App\Notifications\token_status')->where('notifiable_id',$user_id)->delete();
+
+       
+
 
     return view('manage-tickets', ['tickets' => $tickets]);
+
 }
 
 
@@ -29,6 +54,8 @@ class token_viewController extends Controller
     $adminId =auth()->user()->referred_by; // Replace <ADMIN_ID> with the actual admin user ID
 
 $allMessages = messegecontroller::where('sender_id', $user)->orderBy('created_at', 'asc')->get();
+
+ $notification= NotificationModel::where('type', 'App\Notifications\token_status')->where('notifiable_id',$user)->delete();
 
 return view('ticket-chat', ['messages' => $allMessages]);
 
@@ -77,6 +104,22 @@ return view('ticket-chat', ['messages' => $allMessages]);
     $ticket->created_at = Carbon::now(); // Add the current timestamp
 
     $ticket->save();
+
+
+    // $notifyUser = $user->id;
+$notifyUser1 = $ticket->recipient_id;
+$userIds = [$notifyUser1];
+$message = "A new ticket has been raised by " . $ticket->sender_id;
+
+
+
+
+foreach ($userIds as $userId) {
+    $user = User::find($userId);
+    if ($user) {
+        Notification::send($user, new token_status($user, $message));
+    }
+}
 }
 
     /**
@@ -87,7 +130,7 @@ return view('ticket-chat', ['messages' => $allMessages]);
      */
     public function show($id)
     {
-        $messages = messegecontroller::where('id', $id)->first();
+        $messages = messegecontroller::where('id', $id)->with('user')->first();
 
         return view('ticket-chat-response', ['messages' => $messages]);
     }
@@ -139,27 +182,83 @@ public function editcontent(Request $request){
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-       
-        $ticket = messegecontroller::where('id', $id)->first();
-        if($request->message){
-            $ticket->response_message = $request->message ;
-        }
+ public function update(Request $request, $id)
+{
+    $ticket = MessegeController::where('id', $id)->first();
+
+    if ($request->message) {
+        $existingMessage = $ticket->response_message ? json_decode($ticket->response_message, true) : []; // Decode existing JSON message to an array or initialize an empty array
+        $newMessage = $request->message;
         
-         if ($request->hasFile('file')) {
+        // Append the new message to the existing message array
+        $updatedMessage = array_merge($existingMessage, [$newMessage]);
+
+        $ticket->response_message = json_encode($updatedMessage); // Encode the updated message array back to JSON
+       
+    }
+
+   if ($request->hasFile('file')) {
     $attachment = $request->file('file');
     $timestamp = time(); // Get the current timestamp
     $filename = $timestamp . '_' . $attachment->getClientOriginalName(); // Generate a unique filename
-
     $attachment->move(public_path('tickets'), $filename);
-    $ticket->response_attachment = 'tickets/' . $filename;
+    $existingAttachments = $ticket->response_attachment ? json_decode($ticket->response_attachment, true) : []; // Decode existing JSON attachments to an array or initialize an empty array
+    $existingAttachments[] = 'tickets/' . $filename; // Append the new attachment to the existing attachments array
+
+    $ticket->response_attachment = json_encode($existingAttachments); // Encode the updated attachments array back to JSON
 }
 
-     $ticket->save();
 
-  
+    $ticket->save();
+
+    // Rest of your code
+}
+
+
+public function tokenstatuschange($id,$status){
+   
+   $ticket = MessegeController::where('id', $id)->first();
+
+   if($status == 1){
+      
+    $ticket->status = "verified";
+
+   }elseif($status == 2){
+
+    $ticket->status = "pending";
+
+
+   }elseif($status == 3){
+      
+      $ticket->status = "rejected";
+
+   }
+
+
+   $ticket->save();
+
+
+           // $notifyUser = $user->id;
+$notifyUser1 = $ticket->sender_id;
+$userIds = [$notifyUser1];
+$message = "The raised ticket has been responded ";
+
+
+foreach ($userIds as $userId) {
+    $user = User::find($userId);
+    if ($user) {
+        Notification::send($user, new token_status($user, $message));
     }
+}
+
+
+    return redirect()->back()->with('success', 'status has changed');
+ 
+}
+
+
+
+
 
 
 

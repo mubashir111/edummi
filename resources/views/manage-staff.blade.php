@@ -22,6 +22,10 @@
                     <form action="{{ route('staff.store') }}" method="post" enctype="multipart/form-data">
 
                         @csrf
+
+                        @if (session('error'))
+                            <div class="alert alert-danger">{{ session('error') }}</div>
+                        @endif
                     <!-- Modal content -->
                     <div class="modal-content">
                         <div class="modal-header">
@@ -32,14 +36,14 @@
                             <div class="row mt-4">
                                 <div class="form-group col-xl-12">
                                     <label>EMAIL ADDRESS *</label>
-                                    <input name="email" type="email" class="form-control" placeholder="Enter Email Address">
+                                    <input name="email_staff" type="email"   autocomplete="off" class="form-control" placeholder="Enter Email Address">
                                 </div>
                             </div>
 
                             <div class="row ">
                                 <div class="form-group col-xl-12">
                                     <label>PASSWORD *</label>
-                                    <input name="password" type="password" class="form-control" placeholder="Enter Email Address" >
+                                    <input name="password_staff" autocomplete="off" type="password" class="form-control" placeholder="Enter Email Address" >
                                 </div>
                             </div>
 
@@ -117,6 +121,61 @@
 
                 </div>
 
+                <script type="text/javascript">
+               
+                function deletefn(id){
+    
+    var id = id;
+    var url = '{{ route("staff.destroy", ":id") }}';
+    url = url.replace(':id', id);
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You are about to delete this staff.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Delete it!',
+        cancelButtonText: 'No, cancel!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: 'DELETE', // Use DELETE method for deleting a resource
+                url: url,
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    console.log(response);
+
+                    if (response.status === 'success') {
+                        Swal.fire(
+                            'Deleted!',
+                            'Department has been deleted.',
+                            'success'
+                        );
+                        location.reload();
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            'Failed to delete department.',
+                            'error'
+                        );
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        } else {
+            $(this).prop('checked', !$(this).is(':checked'));
+        }
+    });
+}
+
+
+           </script>
+
+
                 <div class="row">
 
                     <div class="col-xl-12 col-sm-12">
@@ -141,11 +200,14 @@
                                         <td>{{ $staff->role }}</td>
                                         
                                         <td>{{ $staff->created_at }}</td>
-                                        <td>
-                                            <div class="d-flex"><div  class="btn btn-primary edit-btn" data-id="{{ $staff->id }}">Edit</div>
+                                        
 
-                                         <div class="btn btn-danger" delete-id="{{ $staff->id}}">Delete</div></div>
-                                     </td>
+                                     <td class=""><button
+                                                        style="border: solid 1px;border-radius: 5px;" data-id="{{ $staff->id }}"><i
+                                                            class="mdi mdi-pencil"></i></button>
+                                                    <button style="border: solid 1px;border-radius: 5px;" onclick="deletefn({{$staff->id}})" delete-id="{{ $staff->id}}"><span
+                                                            class="mdi mdi-delete"></span></button>
+                                                </td>
                                     </tr>
                                     @endforeach
                                    
@@ -157,6 +219,16 @@
                     </div>
                 </div>
             </div>
+
+            <script>
+                $(document).ready(function () {
+                    let table = new DataTable('#myTable', {
+                        responsive: true,
+                       
+                    });
+                });
+
+            </script>
 
             <script>
                 var modal = document.getElementById("myModal");

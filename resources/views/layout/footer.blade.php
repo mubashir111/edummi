@@ -15,35 +15,37 @@
 </div>
 
 <style type="text/css">
-    table.dataTable thead th, table.dataTable thead td, table.dataTable tfoot th, table.dataTable tfoot td {
-    text-align: center;
-}
+    #course_finder_dropddown ul li a:hover {
+        color: #fff;
+        text-decoration: underline !important;
+    }
+
+    #course_finder_dropddown .mdi-delete::before {
+        color: #ffffffb3;
+    }
+
+    #course_finder_dropddown ul li a:hover .mdi-delete::before {
+        color: #fff !important; /* Add !important to override the previous color */
+    }
 </style>
 
-  <script type="text/javascript">
-                                $(document).ready(function() {
-                                  
 
-                                    if (i==1) {
-                                $("#course-finder").attr("href", "{{ route('course-finder.index') }}");
-                            }else{
-                                 $("#course-finder").removeAttr("href");
-                            }
-                                });
-                                </script>
 
 <!-- JAVASCRIPT -->
-<script src="assets/libs/jquery/jquery.min.js"></script>
-<script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="assets/libs/metismenu/metisMenu.min.js"></script>
-<script src="assets/libs/simplebar/simplebar.min.js"></script>
-<script src="assets/libs/node-waves/waves.min.js"></script>
-<script src="assets/libs/jquery-sparkline/jquery.sparkline.min.js"></script>
-<script src="https://maps.google.com/maps/api/js?key=AIzaSyCtSAR45TFgZjOs4nBFFZnII-6mMHLfSYI"></script>
+<script src="{{ asset('assets/libs/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
+<script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
+<script src="{{ asset('assets/libs/admin-resources/rwd-table/rwd-table.min.js') }}"></script>
+<script src="{{ asset('assets/js/pages/table-responsive.init.js') }}"></script>
+<script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('assets/libs/metismenu/metisMenu.min.js') }}"></script>
+<script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
+<script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
+<script src="{{ asset('assets/libs/jquery-sparkline/jquery.sparkline.min.js') }}"></script>
+<script src="https://maps.google.com/maps/api/js?key=YOUR_API_KEY"></script>
+<script src="{{ asset('assets/js/app.js') }}"></script>
 
-<!-- App js -->
-<script src="assets/js/app.js"></script>
-<script src="assets/js/ajax.js"></script>
+
 </body>
 
 </html>

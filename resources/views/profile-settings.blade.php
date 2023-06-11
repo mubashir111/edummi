@@ -1,4 +1,4 @@
-@include('layout.inner2-header')
+@include('layout.header')
 
         <!-- ============================================================== -->
         <!-- Start right Content here -->

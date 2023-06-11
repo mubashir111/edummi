@@ -20,7 +20,7 @@ class CreateImportantContactsTable extends Migration
         $table->string('email');
         $table->string('relation_with_applicant');
         $table->unsignedBigInteger('user_id');
-        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        $table->foreign('user_id')->references('id')->on('students')->onDelete('cascade');
         $table->timestamps();
     });
 }

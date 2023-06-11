@@ -16,7 +16,15 @@
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 </head>
 
+
 <body>
+  <style type="text/css">
+    
+    .img-fluid {
+    max-width: 85% !important;
+    height: auto;
+}
+  </style>
 
 
   <section class="login">
@@ -51,7 +59,9 @@
                     <div>{{ $message }}</div>
                 </div>
                @enderror
-                <input type="text" id="login-email" name="email"  autocomplete="new-text" value="" class="inp px-3" placeholder="Enter Your Mail Id">
+               
+                <input type="text" id="login-email" name="email_check"  value="" class="inp px-3" placeholder="Enter Your Mail Id">
+
                 
               </div>
             </div>
@@ -78,13 +88,9 @@
     </div>
 
   </section>
+  
 
-<script type="text/javascript">
-  $(document).ready(function() {
-    // Target the input field with name="email" and set its value to an empty string
-    $("#login-email").val("  ");
-  });
-</script>
+
 
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

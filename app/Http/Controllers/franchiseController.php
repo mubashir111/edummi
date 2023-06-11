@@ -8,6 +8,10 @@ use App\Models\User;
 use App\Models\FranchiseModel;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use App\Notifications\alertUser;
+use App\Models\NotificationModel;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Redirect;
 
 
 class franchiseController extends Controller
@@ -76,7 +80,7 @@ class franchiseController extends Controller
     }
 
     // Check if all fields are filled
-    $requiredFields = ['head_name', 'email', 'password', 'franchise_name', 'franchise_state', 'franchise_country', 'franchise_number', 'franchise_website', 'social_media_link'];
+    $requiredFields = ['head_name', 'email', 'password', 'franchise_name', 'franchise_state', 'franchise_address', 'franchise_country', 'franchise_number', 'franchise_website', 'social_media_link'];
     foreach ($requiredFields as $field) {
         if (empty($request->$field)) {
             return redirect()->back()->withInput($request->except('password', 're_password'))->with('error', 'All fields are required!');
@@ -149,6 +153,19 @@ $social_media_type = json_encode($request->social_media_type);
 
     $franchise->save();
 
+    $notifyUser = $user->id;
+$notifyUser1 = $user->referred_by;
+$userIds = [$notifyUser,$notifyUser1];
+$message = "franchise id: " . $franchise->franchise_id . " is created";
+
+foreach ($userIds as $userId) {
+    $user = User::find($userId);
+    if ($user) {
+        Notification::send($user, new alertUser($user, $message));
+    }
+}
+
+
     $franchisesall = FranchiseModel::with('user')->get();
 
           // dd($franchises);
@@ -215,12 +232,22 @@ public function edit($id)
     $id = $request->input('edit_id');
     
     $franchise = FranchiseModel::where('user_id', $id)->first();
+
+    $websites = json_encode($request->franchise_website);
+$social_media_links = json_encode($request->social_media_link);
+$social_media_type = json_encode($request->social_media_type);
     
     if ($franchise) {
         $franchise->name = $request->franchise_name;
         $franchise->state = $request->franchise_state;
         $franchise->country = $request->franchise_country;
         $franchise->phone_number = $request->franchise_number;
+        $franchise->city = $request->franchise_city;
+
+         $franchise->websites = $websites;
+   
+    $franchise->social_media_links = $social_media_links;
+    $franchise->social_media_type = $social_media_type;
 
         // Save the updated franchise record to the database
         $franchise->save();
@@ -243,7 +270,7 @@ public function edit($id)
         $user->save();
     }
 
-    return back();
+     return redirect()->intended('/franchise');
 }
 
 

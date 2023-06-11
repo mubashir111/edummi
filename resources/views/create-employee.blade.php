@@ -1,4 +1,4 @@
-@include('layout.inner-header')
+@include('layout.header')
 
 
         <!-- ============================================================== -->

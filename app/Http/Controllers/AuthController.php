@@ -24,23 +24,28 @@ class AuthController extends Controller
     }
 
 
-    public function authenticate(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+ public function authenticate(Request $request)
+{
+    $credentials = $request->validate([
+        'email_check' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+    $emailColumn = 'email'; 
 
-            return redirect()->intended('/');
-        }
+    if (Auth::attempt([$emailColumn => $credentials['email_check'], 'password' => $credentials['password'], 'status' => 'active'])) {
+        $request->session()->regenerate();
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+        return redirect()->intended('/');
     }
+
+    return back()->withErrors([
+        'email_check' => 'The provided credentials do not match our records or the user is not active.',
+    ]);
+}
+
+
+
 
     public function logout()
     {

@@ -7,6 +7,12 @@ use DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\deparmentModel;
 use App\Models\User;
+use App\Models\Department_roleModal;
+use App\Models\Department_staff_modal;
+use Carbon\Carbon;
+use App\Notifications\alertUser;
+use App\Models\NotificationModel;
+use Illuminate\Support\Facades\Notification;
 
 class departmentController extends Controller
 {
@@ -17,7 +23,7 @@ class departmentController extends Controller
      */
    public function index()
 {
-    $departments = deparmentModel::all();
+    
  
 
  $user = auth()->user()->user_id;
@@ -34,9 +40,15 @@ class departmentController extends Controller
    //      dd($users);
    //  }
 
-    $count = $departments->count();
     
-    return view('manage-department', compact('departments', 'count'));
+
+    $count = Department_staff_modal::where('created_by',$user)->count();
+
+    //dd($count);
+
+    $department_role = Department_roleModal::all();
+    
+    return view('manage-department', compact('departments', 'count','department_role'));
 }
 
 
@@ -59,10 +71,26 @@ class departmentController extends Controller
     public function store(Request $request)
     {
          $departments = new deparmentModel;
+
         $departments->department_name = $request->name;
+         $departments->department_role = $request->department_role;
         $departments->created_by = auth()->user()->user_id;
 
         $departments->save();
+
+
+        // $notifyUser = $departments->id;
+        // $notifyUser1 = $departments->referred_by;
+$userIds = [1];
+$message = "New department ".$departments->department_name." is created";
+
+foreach ($userIds as $userId) {
+    $user = User::find($userId);
+    if ($user) {
+        Notification::send($user, new alertUser($user, $message));
+    }
+}
+
 
         return back();
     }
@@ -73,20 +101,46 @@ class departmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+     public function markasread($id)
+    {
+       
+         $notification = NotificationModel::where('id', $id)->first();
+
+         $notification->read_at = Carbon::now();
+
+         $notification->save();
+
+         return back();
+
+
+
+    }
+
+    
     public function show($id)
     {
+        
+        $user_id = auth()->user()->id;
 
         $departments = deparmentModel::where('id', $id)->first();
-        $employee = User::where('role',"department_employee")->get();
+        $employee = User::where('role',"department_employee")->where('referred_by',$user_id)->get();
 
-       
+       $userRole = auth()->user()->role;
+        if ($userRole === "superadmin") {
+
+             $employee = User::where('role',"department_employee")->where('status',"active")->get();
+        }elseif ($userRole === "Branch_Owner") {
+
+            $employee = User::where('role',"franchises_employee")->where('status',"active")->where('referred_by',$user_id)->get();
+        }
 
         // Fetch the department and its associated users
-        $users = User::where('department_id',$id)->get();
+        $users = Department_staff_modal::where('department_id',$id) ->with('user')->get();
         // $users = $department->users;
 
     
-    
+       
 
         return view('department-employee', ['department' => $departments,'employee' => $employee,'users' => $users ]);
         
@@ -110,24 +164,41 @@ class departmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
+  public function update(Request $request, $id)
+{
+    $user = User::where('user_id', $request->user_id)->first();
 
-        $user = User::where('user_id', $request->user_id)->first();
+    $user->department_id = $id;
+    $user->save();
 
-        $user->department_id = $id;
-        $user->save();
+    $departmentStaff = Department_staff_modal::where('staff_id', $request->user_id)
+        ->where('department_id', $id)
+        ->first();
 
-        return back();
-    
-        
+    if (!$departmentStaff) {
+        $departmentStaff = new Department_staff_modal();
+        $departmentStaff->created_by = auth()->user()->user_id;
+        $departmentStaff->created_at = Carbon::now();
     }
+
+    $departmentStaff->staff_id = $request->user_id;
+    $departmentStaff->department_id = $id;
+    $departmentStaff->save();
+
+    
+
+   return redirect()->back()->with('success', 'Employee added successfully');
+
+
+}
+
     
     public function updatename(Request $request)
     {
 
         $department = deparmentModel::where('id', $request->department_id)->first();
         $department->department_name = $request->name;
+        $department->department_role = $request->department_role;
          
         $department->save();
 
@@ -169,7 +240,7 @@ public function departmentemployees(Request $request){
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
-     */
+     */  
     public function destroy($id)
 {
     $department = deparmentModel::findOrFail($id);
@@ -180,5 +251,15 @@ public function departmentemployees(Request $request){
     // Return a response indicating the success or failure of the deletion
     return response()->json(['status' => 'success', 'message' => 'Department has been deleted.']);
 }
+
+ public function remove_employee($id)
+{
+
+     $department = Department_staff_modal::findOrFail($id);
+     $department->delete();
+      return response()->json(['status' => 'success', 'message' => 'Empoyee has been removed from department.']);
+  
+
+   }
 
 }

@@ -12,6 +12,7 @@
                             <h5>Total Employees</h5>
                         </div>
                     </div>
+                    
                     <div class="row text-right">
                         <div class="col-xl-12 text-right">
                             <button class="btn1" id="myBtn">Add New Employee</button>
@@ -160,7 +161,7 @@
                                                             alt="Header Avatar" style="width:150px">
                                                     </div>
                                                     <div class="col-xl-7 mt-5">
-                                                        <label>Lorem Impsum</label>
+                                                        <label class="name"></label>
                                                         <p>GW01234</p>
                                                         <a href="employees.html"><input type="button" style="color: #1F92D1; background-color: #fff;
                                                             border-radius: 5px;border: #1F92D1 solid 1px;"
@@ -277,7 +278,7 @@
     if (employee) {
         // Update the modal content with the retrieved data
         $("#myModal .modal-content .modal-body .col-xl-4 img").attr("src", employee.profile_url);
-        $("#myModal .modal-content .modal-body label").text(employee.name);
+        $("#myModal .name").text(employee.name);
         $("#myModal .modal-content .modal-body p").text(employee.user_id);
         $("#myModal .modal-content .modal-body a").attr("href", "{{ route('employees.edit', ':id') }}".replace(':id', employee.user_id));
         $("#myModal .modal-content .modal-body span:eq(0)").text(employee.gender);

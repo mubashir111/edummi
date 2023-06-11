@@ -1,14 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Poppins:400,500,600);
-.text-left{
-    text-align: left !important;
-}
 
-body[data-sidebar=dark] #sidebar-menu ul li ul.sub-menu li a {
-    color: #ffffffb5 !important;
-    background: 0 0;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-}
 #page-topbar {
     position: fixed;
     top: 0;
@@ -604,6 +595,14 @@ body[data-layout=horizontal] .page-title-content h4 {
     font-weight: bold;
 }
 
+.msg-request {
+    border-radius: 15px;
+    background-color: #ade1fd;
+    width: 20%;
+    height: 30px;
+    padding-top: 5px;
+}
+
 .msg-info-time {
     font-size: 0.85em;
 }
@@ -645,6 +644,21 @@ body[data-layout=horizontal] .page-title-content h4 {
     background: #ddd;
 }
 
+.btn-view-member {
+    border: none;
+    border-radius: 5px;
+    font-size: 10px;
+    color: #1F92D1;
+}
+
+.tbl-btn {
+    border: solid 1px #1F92D1;
+    color: #1F92D1;
+    width: 50%;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
 .msger-send-btn {
     margin-left: 10px;
     background: #eee;
@@ -673,7 +687,7 @@ body[data-layout=horizontal] .page-title-content h4 {
 
 .dropbtn {
     background-color: #fff;
-    color: black;
+    color: grey;
     padding: 16px;
     font-size: 16px;
     border: none;
@@ -712,6 +726,11 @@ body[data-layout=horizontal] .page-title-content h4 {
 
 .dropdown:hover .dropbtn {
     background-color: white;
+}
+
+.ticket-view {
+    width: 30%;
+    border-radius: 5px;
 }
 
 @media (max-width: 992px) {
@@ -1147,7 +1166,7 @@ body[data-sidebar=dark] #sidebar-menu ul li a:hover i {
 }
 
 body[data-sidebar=dark] #sidebar-menu ul li ul.sub-menu li a {
-    color: #8699ad;
+    color: #d5caca;
     background: 0 0;
     -webkit-box-shadow: none;
     box-shadow: none
@@ -1158,7 +1177,7 @@ body[data-sidebar=dark] #sidebar-menu ul li ul.sub-menu li a:hover {
 }
 
 body[data-sidebar=dark] #sidebar-menu ul>li>a.mm-active {
-    background-color: #263442
+    background-color: #1F92D1
 }
 
 body[data-sidebar=dark].vertical-collpsed {
@@ -2607,6 +2626,29 @@ body[data-layout=horizontal][data-layout-size=boxed] .container-fluid {
     background-color: #1b7eb4;
 }
 
+.btn-tckt {
+    width: 50%;
+    height: 35px;
+    color: white;
+    background-color: #1F92D1;
+    border-radius: 10px;
+    border: none;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 1%;
+    margin-top: -2%;
+}
+
+.btn1-tckt:hover {
+    background-color: #1b7eb4;
+}
+
+.date-tckt {
+    width: 60%;
+    border-radius: 5px;
+    border: solid 1px #000;
+}
+
 .btn-ma {
     width: 100%;
     height: 35px;
@@ -2648,6 +2690,14 @@ p {
     background-color: #1F92D1;
     color: #fff;
     width: 50%;
+}
+
+.view-doc-btn {
+    border-radius: 5px;
+    border: none;
+    background-color: #1F92D1;
+    color: #fff;
+    height: 30px;
 }
 
 .accordion-item {
@@ -2724,6 +2774,11 @@ p {
     border-radius: 3px;
     height: 30px;
 
+}
+
+.tbl-slct {
+    border: solid 1px grey;
+    border-radius: 5px;
 }
 
 .input-switch {
@@ -2830,6 +2885,112 @@ div.mm-dropdown ul li img {
     height: 20px;
 }
 
+#slider {
+    width: 100%;
+    border-radius: 10px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.4);
+    ;
+}
+
+.slide {
+    width: 100%;
+
+    display: none;
+    animation-name: fade;
+    animation-duration: 1s;
+
+}
+
+img {
+    width: 100%;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0.5;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.controls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5em;
+    padding: 15px 10px;
+    border-radius: 5px;
+
+}
+
+.controls:hover {
+    background: white;
+    transition: 0.3s;
+}
+
+.controls:activ {
+    color: grey;
+}
+
+#left-arrow {
+    left: 10px;
+}
+
+#right-arrow {
+    right: 10px;
+}
+
+#dots-con {
+
+    text-align: center;
+}
+
+.dot {
+    display: inline-block;
+    background: grey;
+    padding: 8px;
+    border-radius: 100%;
+    margin: 10px 5px;
+}
+
+.activ {
+    background: rgb(0, 0, 0);
+}
+
+@media (max-width:576px) {
+    #slider {
+        width: 100%;
+
+    }
+
+    .controls {
+        font-size: 1em;
+    }
+
+    #dots-con {
+        display: none;
+    }
+}
+
+.app-status-header {
+    color: #fff;
+    background-color: #1F92D1;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.app-status-applctn {
+    color: #fff;
+    background-color: #ade1fd;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
 /* The Modal (background) */
 .modal {
     display: none;
@@ -2868,6 +3029,25 @@ div.mm-dropdown ul li img {
     -webkit-animation-duration: 0.4s;
     animation-name: animatetop;
     animation-duration: 0.4s
+}
+
+.modal-content1 {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border-radius: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+.grey-clr {
+    background-color: rgb(206, 206, 206);
 }
 
 /* Add Animation */
@@ -2980,6 +3160,14 @@ div.mm-dropdown ul li img {
 .mini-stat .mini-stat-img2 {
     background-color: #1F92D1;
     background-size: cover
+}
+
+.mini-stat .mini-stat-img3 {
+    background-color: #1F92D1;
+    background-size: cover;
+    color: #fff;
+    display: flex;
+    border-radius: 10px;
 }
 
 

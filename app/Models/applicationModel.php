@@ -18,4 +18,15 @@ class applicationModel extends Model
              return $this->belongsTo(studentsModel::class, 'user_id', 'id');
           
         }
+
+          public function statusview()
+        {
+            // return $this->hasMany(User::class);
+           
+             return $this->belongsTo(ApplicationStatus::class,'current_status','id');
+          
+        }
+
+
+       
 }

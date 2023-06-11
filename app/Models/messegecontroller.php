@@ -9,4 +9,13 @@ class messegecontroller extends Model
 {
     use HasFactory;
      protected $table = 'tickets';
+
+     public function user()
+    {
+        return $this->belongsTo(User::class, 'sender_id', 'id');
+
+        
+    }
+
+
 }

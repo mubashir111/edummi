@@ -1,4 +1,4 @@
-@include('layout.inner-header')
+@include('layout.header')
 
         <!-- ============================================================== -->
         <!-- Start right Content here -->
@@ -12,11 +12,10 @@
 
             <div class="page-content">
                 <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-xl-12">
-                            <h5>@foreach ($students as $student) {{$student->first_name}} {{$student->middle_name}} {{$student->last_name}} @endforeach</h5>
-                        </div>
-                    </div>
+                    
+
+                    <h5><a href="assigned-students.html" style="color: black;">
+                            <span class="mdi mdi-chevron-left"></span></a>@foreach ($students as $student) {{$student->first_name}} {{$student->middle_name}} {{$student->last_name}} @endforeach</h5>
                    
                     
 
@@ -98,8 +97,9 @@
                                             <tr>
 
                                                 <th>SL NO.</th>
-                                                <th>Document name</th>
-                                                <th>File</th>
+                                                <th>DOCUMENT NAME</th>
+                                                <th>FILE</th>
+                                               
                                                 <th>ACTION</th>
                                             </tr>
                                         </thead>
@@ -118,8 +118,9 @@
                     }
                 @endphp
             </td>
+             
             <td class="">
-                <a href="{{ route('manage-students.edit', ['manage_student' => $student->id]) }}">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
                     <button style="border: Solid 1px;border-radius: 5px;">
                         <i class="mdi mdi-pencil"></i>
                     </button>
@@ -138,8 +139,9 @@
                     }
                 @endphp
             </td>
+             
             <td class="">
-                <a href="{{ route('manage-students.edit', ['manage_student' => $student->id]) }}">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
                     <button style="border: Solid 1px;border-radius: 5px;">
                         <i class="mdi mdi-pencil"></i>
                     </button>
@@ -158,8 +160,9 @@
                     }
                 @endphp
             </td>
+             
             <td class="">
-                <a href="{{ route('manage-students.edit', ['manage_student' => $student->id]) }}">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
                     <button style="border: Solid 1px;border-radius: 5px;">
                         <i class="mdi mdi-pencil"></i>
                     </button>
@@ -178,14 +181,528 @@
                     }
                 @endphp
             </td>
+             
             <td class="">
-                <a href="{{ route('manage-students.edit', ['manage_student' => $student->id]) }}">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
                     <button style="border: Solid 1px;border-radius: 5px;">
                         <i class="mdi mdi-pencil"></i>
                     </button>
                 </a>
             </td>
         </tr>
+
+
+        <tr>
+            <td>5</td>
+            <td>Bachlors Marksheet</td>
+            <td>
+                @php
+                    if(isset($student->document->{"bachlors_marksheet_url"})) {
+                        echo "<a href='../" . $student->document->{"bachlors_marksheet_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>6</td>
+            <td>consolidate marksheet</td>
+            <td>
+                @php
+                    if(isset($student->document->{"consolidate_marksheet_url"})) {
+                        echo "<a href='../" . $student->document->{"consolidate_marksheet_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+         <tr>
+            <td>7</td>
+            <td>acadamic transcript</td>
+            <td>
+                @php
+                    if(isset($student->document->{"acadamic_transcript_url"})) {
+                        echo "<a href='../" . $student->document->{"acadamic_transcript_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+        <tr>
+            <td>8</td>
+            <td>final degree</td>
+            <td>
+                @php
+                    if(isset($student->document->{"final_degree_url"})) {
+                        echo "<a href='../" . $student->document->{"final_degree_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>9</td>
+            <td>Application form</td>
+            <td>
+                @php
+                    if(isset($student->document->{"application_form_url"})) {
+                        echo "<a href='../" . $student->document->{"application_form_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>10</td>
+            <td>Passport file</td>
+            <td>
+                @php
+                    if(isset($student->document->{"passport_file_url"})) {
+                        echo "<a href='../" . $student->document->{"passport_file_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+
+         <tr>
+            <td>11</td>
+            <td>Statment purpose</td>
+            <td>
+                @php
+                    if(isset($student->document->{"statment_purpose_url"})) {
+                        echo "<a href='../" . $student->document->{"statment_purpose_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+         <tr>
+            <td>12</td>
+            <td>CV</td>
+            <td>
+                @php
+                    if(isset($student->document->{"cv_url"})) {
+                        echo "<a href='../" . $student->document->{"cv_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+<tr>
+            <td>13</td>
+            <td>latter of recomentation</td>
+            <td>
+                @php
+                    if(isset($student->document->{"latter_of_recomentation_url"})) {
+                        echo "<a href='../" . $student->document->{"latter_of_recomentation_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+
+
+        <tr>
+            <td>14</td>
+            <td>english certificate</td>
+            <td>
+                @php
+                    if(isset($student->document->{"english_certificate_url"})) {
+                        echo "<a href='../" . $student->document->{"english_certificate_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>15</td>
+            <td>bank balance</td>
+            <td>
+                @php
+                    if(isset($student->document->{"bank_balance_url"})) {
+                        echo "<a href='../" . $student->document->{"bank_balance_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+
+         <tr>
+            <td>16</td>
+            <td>financial affidavit</td>
+            <td>
+                @php
+                    if(isset($student->document->{"financial_affidavit_url"})) {
+                        echo "<a href='../" . $student->document->{"financial_affidavit_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+       <tr>
+            <td>17</td>
+            <td>gap explanation letter</td>
+            <td>
+                @php
+                    if(isset($student->document->{"gap_explanation_letter_url"})) {
+                        echo "<a href='../" . $student->document->{"gap_explanation_letter_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+
+        <tr>
+            <td>17</td>
+            <td>Online Submission Configaration</td>
+            <td>
+                @php
+                    if(isset($student->document->{"Online_Submission_Configaration_url"})) {
+                        echo "<a href='../" . $student->document->{"Online_Submission_Configaration_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+
+        <tr>
+            <td>18</td>
+            <td>sat file</td>
+            <td>
+                @php
+                    if(isset($student->document->{"sat_file_url"})) {
+                        echo "<a href='../" . $student->document->{"sat_file_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+         <tr>
+            <td>19</td>
+            <td>GRE</td>
+            <td>
+                @php
+                    if(isset($student->document->{"gre_url"})) {
+                        echo "<a href='../" . $student->document->{"gre_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>19</td>
+            <td>GMAT</td>
+            <td>
+                @php
+                    if(isset($student->document->{"gmat_url"})) {
+                        echo "<a href='../" . $student->document->{"gmat_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>20</td>
+            <td>TOEFL</td>
+            <td>
+                @php
+                    if(isset($student->document->{"toefl_url"})) {
+                        echo "<a href='../" . $student->document->{"toefl_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>21</td>
+            <td>Ielts file</td>
+            <td>
+                @php
+                    if(isset($student->document->{"ielts_file_url"})) {
+                        echo "<a href='../" . $student->document->{"ielts_file_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+         <tr>
+            <td>22</td>
+            <td>PTE file</td>
+            <td>
+                @php
+                    if(isset($student->document->{"pte_url"})) {
+                        echo "<a href='../" . $student->document->{"pte_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>23</td>
+            <td>Exempyion Certicate</td>
+            <td>
+                @php
+                    if(isset($student->document->{"exempyion_certificate_url"})) {
+                        echo "<a href='../" . $student->document->{"exempyion_certificate_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+      
+      <tr>
+            <td>24</td>
+            <td>Additional Documents</td>
+            <td>
+                @php
+                    if(isset($student->document->{"additional_documents_url"})) {
+                        echo "<a href='../" . $student->document->{"additional_documents_url"} . "'>View</a>";
+                    } else {
+                        echo "<div>Not uploaded</div>";
+                    }
+                @endphp
+            </td>
+             
+            <td class="">
+                <a href='{{ route("document.edit", ["id" =>$student->id]) }}'>
+                    <button style="border: Solid 1px;border-radius: 5px;">
+                        <i class="mdi mdi-pencil"></i>
+                    </button>
+                </a>
+            </td>
+        </tr>
+
+
+
+
     @endforeach
 </tbody>
 
@@ -338,14 +855,7 @@
                 $(document).ready(function () {
                     let table = new DataTable('#myTable', {
                         responsive: true,
-                        columns: [
-                            { responsivePriority: 1 },
-                            { responsivePriority: 2 },
-                            { responsivePriority: 3 },
-                            { responsivePriority: 4 }
-                           
-
-                        ]
+                        
                     });
                 });
 

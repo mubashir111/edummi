@@ -3,6 +3,11 @@
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
+        <style>
+            th{
+                text-align: left !important;
+            }
+        </style>
         <div class="main-content">
 
             <div class="page-content">
@@ -17,66 +22,93 @@
                             <button class="btn1" id="myBtn">Add New Department</button>
                         </div>
                     </div>
-                    <div id="myModal" class="modal">
-
-                        <!-- Modal content -->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 style="color: #000; font-weight: bolder;">ADD NEW DEPARTMENT</h5>
-                                <span class="close">&times;</span>
-                            </div>
-                            <div class="modal-body">
-                                <form action="{{ route('departments.store') }}" method="post" enctype="multipart/form-data">
-
-                        @csrf
-                                <div class="row mt-4">
-                                    <div class="form-group col-xl-12">
-                                        <label>DEPARTMENT NAME</label>
-                                        <input type="text" name="name" class="form-control" placeholder="Enter Department Name">
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="form-group col-xl-12 text-center mt-4">
-                                        <input type="submit" class="footer-btn btn-active" value="Add">
-                                    </div>
-                                </div>
-                                </form>
-                            </div>
-                        </div>
-
+                  <div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 style="color: #000; font-weight: bolder;">ADD NEW DEPARTMENT</h5>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form action="{{ route('departments.store') }}" method="post" enctype="multipart/form-data">
+                @csrf
+                <div class="row mt-4">
+                    <div class="form-group col-xl-12">
+                        <label>DEPARTMENT NAME</label>
+                        <input type="text" name="name" class="form-control" placeholder="Enter Department Name" required>
                     </div>
+                </div>
 
-                    <div id="editModal" class="editModal modal">
-
-                        <!-- Modal content -->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 style="color: #000; font-weight: bolder;">ADD NEW DEPARTMENT</h5>
-                                <span class="close">&times;</span>
-                            </div>
-                            <div class="modal-body">
-                                <form action="{{ route('departmentsname') }}" method="post" >
-
-                        @csrf
-                                <div class="row mt-4">
-                                    <div class="form-group col-xl-12">
-                                        <label>DEPARTMENT NAME</label>
-                                        <input type="text" name="name" class="form-control" placeholder="Enter Department Name" required>
-                                    </div>
-                                </div>
-                                <input type="hidden" name="department_id" required>
-
-                                <div class="row">
-                                    <div class="form-group col-xl-12 text-center mt-4">
-                                        <input type="submit" class="footer-btn btn-active" value="Update">
-                                    </div>
-                                </div>
-                                </form>
-                            </div>
+                @if($department_role)
+                    <div class="row mt-4">
+                        <div class="form-group col-xl-12">
+                            <label>DEPARTMENT ROLE</label>
+                            <select class="form-control" name="department_role" id="permenent_country" required>
+                                <option value="">Select</option>
+                                @foreach($department_role as $role)
+                                    <option value="{{ $role->role_name }}">{{ $role->role_name }}</option>
+                                @endforeach
+                            </select>
                         </div>
-
                     </div>
+                @endif
+
+                <div class="row">
+                    <div class="form-group col-xl-12 text-center mt-4">
+                        <input type="submit" class="footer-btn btn-active" value="Add">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="editModal" class="editModal modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 style="color: #000; font-weight: bolder;">EDIT DEPARTMENT</h5>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form action="{{ route('departmentsname') }}" method="post">
+                @csrf
+                <div class="row mt-4">
+                    <div class="form-group col-xl-12">
+                        <label>DEPARTMENT NAME</label>
+                        <input type="text" name="name" class="form-control" placeholder="Enter Department Name" required>
+                    </div>
+                </div>
+
+                @if($department_role)
+                    <div class="row mt-4">
+                        <div class="form-group col-xl-12">
+                            <label>DEPARTMENT ROLE</label>
+                            <select class="form-control" name="department_role" id="permenent_country" required>
+                               
+                                @if($department_role)
+                                    @foreach($department_role as $role)
+                                        <option value="{{ $role->role_name }}">{{ $role->role_name }}</option>
+                                    @endforeach
+                                @endif
+                            </select>
+
+                        </div>
+                    </div>
+                @endif
+
+                <input type="hidden" name="department_id" required>
+
+                <div class="row">
+                    <div class="form-group col-xl-12 text-center mt-4">
+                        <input type="submit" class="footer-btn btn-active" value="Update">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
                     <div class="row">
 
@@ -88,6 +120,7 @@
                                             <tr>
                                                 <th>SL NO.</th>
                                                 <th>DEPARTMENT</th>
+                                                <th>ROLE</th>
                                                 <th>MEMBERS</th>
                                                 <th>STATUS</th>
                                                 <th>EMPLOYEES</th>
@@ -105,6 +138,7 @@
                                             <tr>
                                                 <td>{{$i++}}</td>
                                                 <td>{{ $department->department_name }}</td>
+                                                <td>{{$department->department_role}}</td>
                                                 <td>{{ $department->users->count() }}</td>
                                                 
                                                  @php  $u++; @endphp
@@ -116,12 +150,12 @@
                                                     <span class="info-text"></span>
                                                 </td>
                                                 <td class=""><a href="{{ route('departments.show', ['department' => $department->id]) }}"
-                                                        style="color: #1F92D1;">{{ $count == 0 ? 'Add +' : 'View' }}</a>
+                                                        style="color: #1F92D1;">{{ $department->users->count() == 0 ? 'Add +' : 'View' }}</a>
                                                 </td>
 
 
                                                 <td class=""><button
-                                                        style="border: solid 1px;border-radius: 5px;" edit-id="{{$department->id}}" department-name="{{$department->department_name}}"><i
+                                                        style="border: solid 1px;border-radius: 5px;" edit-id="{{$department->id}}" department-name="{{$department->department_name}}" department_role="{{$department->department_role}}"><i
                                                             class="mdi mdi-pencil"></i></button>
                                                     <button style="border: solid 1px;border-radius: 5px;" delete-id="{{$department->id}}"><span
                                                             class="mdi mdi-delete"></span></button>
@@ -233,7 +267,8 @@
                             { responsivePriority: 3 },
                             { responsivePriority: 4 },
                             { responsivePriority: 5 },
-                            { responsivePriority: 6 }
+                            { responsivePriority: 6 },
+                            {responsivePriority: 7}
 
                         ]
                     });
@@ -250,6 +285,13 @@
                     $("#editModal input[name='name']").val($(this).parent().attr("department-name"));
 
                     $("#editModal input[name='department_id']").val($(this).parent().attr("edit-id"));
+
+                    var newOptionValue = $(this).parent().attr("department_role");
+$("#editModal select[name='department_role'] option").each(function () {
+    if ($(this).val() === newOptionValue) {
+        $(this).prop("selected", true);
+    }
+});
 
 
                     editmodal.style.display = "block";

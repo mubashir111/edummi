@@ -8,8 +8,12 @@ use App\Models\addressModel;
 use App\Models\ImportantContactsModel;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
+use App\Notifications\alertUser;
+use App\Models\NotificationModel;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Redirect;
 
-class employeeController extends Controller
+class EmployeeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,25 +22,23 @@ class employeeController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+        $userRole = $user->role;
+        $employeeRole = null;
 
-        $user = auth()->user()->id;
-         
-          $userRole = Auth::user()->role;
+        if ($userRole === "superadmin") {
+            $employeeRole = "department_employee";
+        } elseif ($userRole === "Branch_Owner") {
+            $employeeRole = "franchises_employee";
+        }
 
-         if ($userRole == "superadmin") {
-            
-            $employee_role= "department_employee";
-         }elseif($userRole == "Branch_Owner"){
+        $employees = User::where('role', $employeeRole)
+            ->where('referred_by', $user->id)
+            ->get();
 
-            $employee_role= "franchises_employee";
-         }else{
 
-         }
- 
 
-       $employee = User::where('role',$employee_role)->where('referred_by', $user)->get();
-
-        return view('manage-employees',['employee' => $employee]);
+        return view('manage-employees', ['employee' => $employees]);
     }
 
     /**
@@ -149,10 +151,39 @@ class employeeController extends Controller
     $address2->nationality = $request->permenent_nationality;
     $address2->employee_id = $user_id;
     $address2->save();
+    
+      $notifyUser = $employee->id;
+$notifyUser1 = $employee->referred_by;
+$userIds = [$notifyUser, $notifyUser1];
+$message = "Employee id: " . $employee->email . " is created";
 
-   
-    $employees_details = User::where('role', $employee_role)->where('referred_by', $user)->get();
-    return view('manage-employees', ['employee' => $employees_details]);
+foreach ($userIds as $userId) {
+    $user = User::find($userId);
+    if ($user) {
+        Notification::send($user, new alertUser($user, $message));
+    }
+}
+
+
+
+
+    $user = Auth::user();
+        $userRole = $user->role;
+        $employeeRole = null;
+
+        if ($userRole === "superadmin") {
+            $employeeRole = "department_employee";
+        } elseif ($userRole === "Branch_Owner") {
+            $employeeRole = "franchises_employee";
+        }
+
+        $employees = User::where('role', $employeeRole)
+            ->where('referred_by', $user->id)
+            ->get();
+
+
+
+        return view('manage-employees', ['employee' => $employees]);
 }
 
     /**
@@ -167,14 +198,17 @@ class employeeController extends Controller
     // Perform any additional logic with the retrieved user
 
 
-
-
+   
+  
    
     if ($user) {
         return response()->json(['status' => 'success', 'response' => $user]);
     } else {
         return response()->json(['status' => 'error', 'message' => 'Failed to load id']);
     }
+
+
+
 }
 
 
@@ -218,7 +252,8 @@ class employeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-       
+              
+           
 
                  $employee = User::where('user_id', $id)->first();
 
@@ -229,7 +264,10 @@ class employeeController extends Controller
 
                   $employee->name = $request->name;
                     $employee->email = $request->email;
-                    $employee->password = Hash::make($request->password);
+                    if($employee->password !== null){
+                         $employee->password = Hash::make($request->password);
+                    }
+                   
                     $employee->date_of_birth = $formatted_date;
                     $employee->gender = $request->gender;
                     $employee->marital_status = $request->marital_status;
@@ -269,7 +307,7 @@ class employeeController extends Controller
                 $address2->nationality = $request->permenent_nationality;
                 $address2->save();
 
-                return back();
+             return redirect()->intended('/employees');
 
     }
 

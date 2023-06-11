@@ -1,12 +1,229 @@
-@include('layout.inner2-header')
+@include('layout.header')
 
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
+        <script type="text/javascript">
+  $(document).ready(function() {
+    var api_token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfZW1haWwiOiJtdWJhNHNoaXJAZ21haWwuY29tIiwiYXBpX3Rva2VuIjoiWFFUZ0dyWmVpdU5jMkl3UmVTUDI0UEFTTkd0Ylk1M3BFSFMyWWlLaGJraE43Wm5rdjlmaGdBYVA1cTJ2cDdGTWt3MCJ9LCJleHAiOjE2ODU2Nzk3NzR9.HzvJ1K659OgB8XQaMEIQqLA2OdtqjqHR0yOUKQGEQyk";
+     
+    $.ajax({
+      url: "https://www.universal-tutorial.com/api/countries",
+      type: "GET",
+      headers: {
+        "Accept": "application/json",
+        "Authorization": api_token
+      },
+      success: function(response) {
+       
+
+        // Iterate over the countries array
+        for (var i = 0; i < response.length; i++) {
+          var country = response[i];
+          var countryName = country.country_name;
+          var country_code = country.country_phone_code;
+          
+
+          $('#country_of_birth').append($('<option>', {
+            value: countryName,
+            text: countryName
+          }));
+
+         
+
+
+        }
+
+
+      },
+      error: function(error) {
+        console.error(error);
+      }
+    });
+
+   
+
+   
+
+   
+    // Event handler for country dropdown change
+        $('#country_of_birth').on('change', function() {
+            var country = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/states/"+country;
+          
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+
+
+                                $('#stateDropdown').empty();
+
+                                for (var i = 0; i < response.length; i++) {
+                      var state = response[i];
+                      var stateName = state.state_name;
+                      
+                      
+                      
+
+                      $('#stateDropdown').append($('<option>', {
+                        value: stateName,
+                        text: stateName
+                      }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+
+            
+        });
+
+
+
+         $('#stateDropdown').on('change', function() {
+            var selectedState = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/cities/"+selectedState;
+          
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+
+                                   
+
+                                   $('#mailing_city').empty();
+
+                                for (var i = 0; i < response.length; i++) {
+                      var city = response[i];
+                      var city_name = city.city_name;
+                      
+                      
+                      
+
+                      $('#mailing_city').append($('<option>', {
+                        value: city_name,
+                        text: city_name
+                      }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+
+
+   //permenent_country
+
+          // Event handler for country dropdown change
+        $('#permenent_country').on('change', function() {
+            var country = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/states/"+country;
+          
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+                                
+                                $('#permentstateDropdown').empty();
+
+                                for (var i = 0; i < response.length; i++) {
+                      var state = response[i];
+                      var stateName = state.state_name;
+                      
+                      
+                      
+
+                      $('#permentstateDropdown').append($('<option>', {
+                        value: stateName,
+                        text: stateName
+                      }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+
+            
+        });
+
+         $('#permentstateDropdown').on('change', function() {
+            var selectedState = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/cities/"+selectedState;
+          
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+
+                                   $('#permenent_city').empty();
+                                for (var i = 0; i < response.length; i++) {
+                      var city = response[i];
+                      var city_name = city.city_name;
+                      
+                      
+                      
+
+                      $('#permenent_city').append($('<option>', {
+                        value: city_name,
+                        text: city_name
+                      }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+
+
+
+  });
+</script>
         <div class="main-content">
 
             <div class="page-content">
                 <div class="container-fluid">
+
+                           <!--  <div class="alert alert-success" role="alert">
+                                <strong>Well done!</strong> You successfully read <a href="#" class="alert-link">this
+                                    important alert message</a>.
+                            </div> -->
 
                     <h5 class="mb-3">Franchise Registration</h5>
                     
@@ -24,9 +241,7 @@
 
 
                         <!-- Display error messages here -->
-                }
-                }
-    @if (session('error'))
+                   @if (session('error'))
     <div class="alert alert-danger">{{ session('error') }}</div>
 @endif
 
@@ -74,12 +289,20 @@
                                         </div>
                                         <div class="form-group col-xl-4">
                                             <label>COUNTRY</label>
-                                            <select name="franchise_country" class="form-control" value="{{ $franchises->country }}" required>
-                                                <option value="india">India</option>
+                                            <select id="country_of_birth" name="franchise_country" class="form-control" required>
+                                               @if(isset( $franchises->country))
+                                                                <option value="{{ $franchises->country }}" selected>{{  $franchises->country}}</option>
+                                                            @else
+                                                                <option value="" selected>Select</option>
+                                                            @endif
                                             </select>
                                             <label class="mt-4">STATE</label>
-                                            <select name="franchise_state" class="form-control" value="{{ $franchises->state }}" required>
-                                                <option>Select</option>
+                                            <select id="stateDropdown" name="franchise_state" class="form-control"  required>
+                                                @if(isset( $franchises->state))
+                                                                <option value="{{ $franchises->state }}" selected>{{  $franchises->state}}</option>
+                                                            @else
+                                                                <option value="" selected>Select</option>
+                                                            @endif
                                             </select>
                                         </div>
                                     </div>
@@ -102,8 +325,12 @@
 
                                         <div class="form-group col-xl-4">
                                             <label>CITY</label>
-                                            <select name="franchise_city" class="form-control" value="{{ old('franchise_city') }}" required>
-                                                <option>Select</option>
+                                            <select id="mailing_city" name="franchise_city" class="form-control"  required>
+                                                @if(isset( $franchises->city))
+                                                                <option value="{{ $franchises->city }}" selected>{{  $franchises->city}}</option>
+                                                            @else
+                                                                <option value="" selected>Select</option>
+                                                            @endif
                                             </select>
                                         </div>
                                     </div>
@@ -117,6 +344,8 @@
                                                 </div>
 
                                                 <div id="social-media-container">
+                                                    
+
          @if(isset($socialMediaTypes) && is_array($socialMediaTypes))
     @foreach($socialMediaTypes as $key => $socialMediaType)
         <div class="row media-row" id="social-media-row-{{ $key + 1 }}">
@@ -132,8 +361,8 @@
                 <div class="form-group mr-4" style="flex-basis: 70%;">
                     <input type="text" class="form-control" placeholder="Link" name="social_media_link[]" value="{{ $socialMediaLinks[$key] ?? '' }}">
                 </div>
-                <div class="form-group" style="flex-basis: 10%;">
-                    <button style="border: solid 1px;border-radius:3px;color: rgb(246, 49, 49);"><i class="mdi  mdi-18px mdi-delete"></i></button>
+                <div class="form-group" style="flex-basis: 10%;margin-left: 10px;">
+                    <button style="border: solid 1px;border-radius:3px;"><i class="mdi  mdi-18px mdi-delete"></i></button>
                 </div>
             </div>
         </div>
@@ -145,7 +374,7 @@
 
                                             </div>
 
-                                            <div><input type="button" class="link-btn" id="add-so"  value="+ Add More">
+                                            <div class="mt-2"><input type="button" class="link-btn" id="add-so"  value="+ Add More">
                                                 </div>
 
                                         </div>
@@ -178,7 +407,7 @@
                                                 </div>
                                                 <div class="form-group col-xl-12">
                                                     <input name="password" type="text" class="form-control"
-                                                        placeholder="Create Password" value="{{ $password }}" required>
+                                                        placeholder="Update  Password Only IF Needed" value="" >
                                                 </div>
 
                                                
@@ -277,5 +506,10 @@ $(document).ready(function() {
 
     </script>
 
+    
 
-    @include('layout.inner2-footer')
+
+   
+
+
+    @include('layout.footer')

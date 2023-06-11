@@ -15,10 +15,10 @@ class CreateTestAttendanceTable extends Migration
 {
     Schema::create('test_attendance', function (Blueprint $table) {
         $table->id();
-        $table->string('test_name');
-        $table->date('test_date');
-        $table->string('test_center');
-        $table->string('score')->nullable();
+        $table->string('test_name')->nullable();
+        $table->date('test_date')->nullable();
+        $table->string('test_center')->nullable();
+        $table->string('score')->nullable()->nullable();
         $table->unsignedBigInteger('student_id');
         $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
         $table->timestamps();

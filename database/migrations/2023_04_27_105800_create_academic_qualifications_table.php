@@ -18,7 +18,7 @@ class CreateAcademicQualificationsTable extends Migration
         $table->unsignedBigInteger('student_id');
         $table->string('qualification');
         $table->string('institution');
-        $table->date('start_date');
+        $table->date('start_date')->nullable();
         $table->date('end_date')->nullable();
         $table->timestamps();
         

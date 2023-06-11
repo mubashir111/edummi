@@ -9,10 +9,13 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Role;
 use App\Models\addressModel;
+use App\Models\deparmentModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +31,7 @@ class User extends Authenticatable
          'profile_url',
          'status',
     ];
+    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -55,10 +59,10 @@ class User extends Authenticatable
     }
 
 
-    public function department()
-    {
-        return $this->belongsTo(Department::class);
-    }
+    // public function department()
+    // {
+    //     return $this->belongsTo(Department::class);
+    // }
 
      public function address()
         {
@@ -66,4 +70,12 @@ class User extends Authenticatable
             return $this->hasMany(addressModel::class,'employee_id','user_id');
           
         }
+
+     public function department()
+{
+    return $this->hasMany(Department_staff_modal::class, 'staff_id', 'user_id')->with('department');
+}
+
+
+  
 }

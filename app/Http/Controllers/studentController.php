@@ -10,7 +10,17 @@ use App\Models\passportModel;
 use App\Models\STapplicationModel;
 use App\Models\documentsModel;
 use App\Models\deparmentModel;
+use App\Models\ImportantContactsModel;
+use App\Models\academic_qualificationsModal;
+use App\Models\work_experienceModal;
+use App\Models\test_attendanceModel;
 use Carbon\Carbon;
+use App\Notifications\alertUser;
+use App\Models\NotificationModel;
+use Illuminate\Support\Facades\Notification;
+use App\Models\ApplicationStatus;
+use App\Models\applicationModel;
+use App\Models\intakeModal;
 
 class studentController extends Controller
 {
@@ -21,7 +31,35 @@ class studentController extends Controller
      */
     public function index()
     {    
-        $students = studentsModel::all();
+
+
+            
+
+       
+        $userRole = auth()->user()->role;
+        if ($userRole === "superadmin") {
+            $students = studentsModel::with('assignedto')->get();
+        } elseif ($userRole === "Branch_Owner") {
+
+
+$students = studentsModel::where('referred_by', auth()->user()->id)->orWhere('manager_id', auth()->user()->id)
+->with('assignedto')
+->get();
+
+
+
+
+        } else{
+            $students = studentsModel::where('referred_by',auth()->user()->id)->with('assignedto')->get();
+           
+        }
+
+        
+
+
+
+        
+
 
         $user = auth()->user()->user_id;
 
@@ -44,7 +82,7 @@ class studentController extends Controller
 
    public function departmentstudents()
     {
-        $user = auth()->user()->id;
+        $user = auth()->user()->user_id;
 
         $students = studentsModel::where('assigned_to',$user)->get();
 
@@ -56,6 +94,27 @@ class studentController extends Controller
         return view('department-students',['students'=> $students ,'departments' => $departments]);
 
     }
+
+
+    public function departmentstudents_visa()
+    {
+
+        $user = auth()->user()->user_id;
+
+        $students = studentsModel::where('document_status',"verified")->with('application')->get();
+
+
+
+       $departments = deparmentModel::where('created_by',auth()->user()->user_id)->get();
+
+         $application_status = ApplicationStatus::all();
+
+
+        return view('department-students-verified',['students'=> $students ,'departments' => $departments,'application_status' => $application_status]);
+
+
+    }
+
 
     public function create()
     {
@@ -84,17 +143,47 @@ class studentController extends Controller
     }
 
 
-         $userRole = Auth::user()->role;
-         $userId = Auth::user()->id;
+         $userRole = auth::user()->role;
+         $userId = auth::user()->id;
+
+        
+        if ($userRole === "superadmin") {
+            $manager_id_sa = auth::user()->id;
+        } elseif ($userRole === "Branch_Owner") {
+             $manager_id_sa = auth::user()->referred_by;
+            
+
+        } else{
+            $manager_id_sa = auth::user()->referred_by;
+
+           
+           
+        }
   
          $student = new studentsModel;
-            $student->first_name = $request->first_name;
+           $student->first_name = $request->first_name;
             $student->middle_name = $request->middle_name;
             $student->last_name = $request->last_name;
+
+            // Concatenate the first name, middle name, and last name with spaces
+            $nameParts = [];
+            if (!empty($request->first_name)) {
+                $nameParts[] = $request->first_name;
+            }
+            if (!empty($request->middle_name)) {
+                $nameParts[] = $request->middle_name;
+            }
+            if (!empty($request->last_name)) {
+                $nameParts[] = $request->last_name;
+            }
+
+            $student->name = implode(' ', $nameParts);
+
             $student->phone = $request->number;
             $student->email = $request->email;
             $student->student_id = $student_id;
              $student->referred_by  = $userId;
+             $student->manager_id  = $manager_id_sa;
               $student->referral_role_type =$userRole;
                $student->created_at=Carbon::now(); 
                
@@ -110,9 +199,21 @@ class studentController extends Controller
             
             $student->save();
 
+            // $notifyUser = $user->id;
+$notifyUser1 = $student->referred_by;
+$userIds = [$notifyUser1];
+$message = "student id: " . $student->student_id . " is created";
 
-            $students = studentsModel::all();
-         return view('manage-students',['students'=> $students]);
+foreach ($userIds as $userId) {
+    $user = User::find($userId);
+    if ($user) {
+        Notification::send($user, new alertUser($user, $message));
+    }
+}
+
+           
+         return redirect()->back()->with('success', 'Student created successfully');
+
 
            
         
@@ -131,22 +232,28 @@ class studentController extends Controller
 
      public function assignto(Request $request)
     {
-       
+        
+        $department = deparmentModel::where('id',$request->department)->first();
 
         $student = studentsModel::where('id', $request->student_id)->first();
        
 
          $student->assigned_to = $request->employee;
          $student->department = $request->department;
+
+
+         $student->current_status = "Hand over to ".$department->department_name;
          $student->save();
-         return back();
+         
+         return redirect()->back()->with('success', 'Student assigned to department employee successfully');
+
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response  documentEdit
      */
     public function edit($id)
     {
@@ -154,6 +261,10 @@ class studentController extends Controller
     ->with('passport')
     ->with('application')
     ->with('document')
+    ->with('important_contacts')
+    ->with('academic_qualifications')
+    ->with('work_experience')
+    ->with('test_attendance')
     ->first();
 
     $mailing_address= studentaddressModel::where('student_id', $id)->where('address_type',"mailing")->first();
@@ -166,6 +277,88 @@ class studentController extends Controller
          return view('personal-information',['students'=> $students , 'mailing_address'=>$mailing_address , 'permanent_address'=>$permanent_address]);
     }
 
+
+      public function documentEdit($id)
+    {
+
+        $students = studentsModel::where('id', $id)
+    ->with('document')
+    ->first();
+
+
+         return view('document',['students'=> $students ]);
+
+
+    }
+
+     public function applicationEdit($id)
+    {
+
+        $students = studentsModel::where('id', $id)
+    ->with('application')->with('application.statusview')
+    ->first();
+
+
+
+        $intakes = intakeModal::all();
+
+
+         return view('applications',['students'=> $students,'intakes'=>$intakes]);
+
+
+    } 
+
+    public function academicQualificationEdit($id)
+    {
+     $students = studentsModel::where('id', $id)
+    ->with('academic_qualifications')
+    ->first();
+
+     return view('academic-qualification',['students'=> $students]);
+
+    } 
+
+
+
+
+     public function workExperience($id)
+    {
+
+        
+        $students = studentsModel::where('id', $id)
+    ->with('work_experience')
+    ->first();
+
+     return view('work-experience',['students'=> $students]);
+
+
+    }
+
+     public function testsEdits($id)
+    {
+
+        $students = studentsModel::where('id', $id)
+    ->with('test_attendance')
+    ->first();
+
+     return view('test',['students'=> $students]);
+
+
+    }
+
+    public function verifiedtestsEdits($id)
+    {
+
+        $students = studentsModel::where('id', $id)
+    ->with('test_attendance')
+    ->first();
+
+     return view('verified-student-test',['students'=> $students]);
+
+
+    }
+
+
     /**
      * Update the specified resource in storage.
      *
@@ -173,7 +366,7 @@ class studentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-
+                     
 
      public function assignedstudents($id)
     {
@@ -181,6 +374,7 @@ class studentController extends Controller
     ->with('passport')
     ->with('application')
     ->with('document')
+    ->with('academic_qualifications')
     ->get();
 
    
@@ -190,6 +384,174 @@ class studentController extends Controller
      return view('student-docs',compact('students') );
 
 }
+
+
+ public function application_student_view($id)
+    {
+         $students = studentsModel::where('id', $id)
+    ->with('passport')
+    ->with('application')
+    ->with('document')
+    ->with('academic_qualifications')
+    ->first();
+
+    $mailing_address= studentaddressModel::where('student_id', $id)->where('address_type',"mailing")->first();
+
+     $permanent_address= studentaddressModel::where('student_id', $id)->where('address_type',"permanent")->first();
+
+    //dd($students->student_id);
+
+     return view('student-personal-detail',compact('students', 'mailing_address', 'permanent_address'));
+
+
+
+}
+
+ public function application_student_document_view($id)
+    {
+           
+            $students = studentsModel::where('id', $id)
+    ->with('passport')
+    ->with('application')
+    ->with('document')
+    ->with('academic_qualifications')
+    ->first();
+
+    $mailing_address= studentaddressModel::where('student_id', $id)->where('address_type',"mailing")->first();
+
+     $permanent_address= studentaddressModel::where('student_id', $id)->where('address_type',"permanent")->first();
+
+    //dd($students->student_id);
+
+     return view('student-document-view',compact('students', 'mailing_address', 'permanent_address'));
+
+
+    }
+
+     public function application_student_application_view($id)
+    {
+
+         $students = studentsModel::where('id', $id)
+    ->with('passport')
+    ->with('application')
+     ->with('application.chat')
+    ->with('document')
+    ->with('academic_qualifications')
+    ->first();
+
+    $mailing_address= studentaddressModel::where('student_id', $id)->where('address_type',"mailing")->first();
+
+     $permanent_address= studentaddressModel::where('student_id', $id)->where('address_type',"permanent")->first();
+
+
+    //dd($students->student_id);
+
+     return view('student-applications-verify',compact('students', 'mailing_address', 'permanent_address'));
+
+    }
+
+
+    
+
+ public function filter_students_application()
+    {
+        
+        $user = auth()->user()->user_id;
+
+       $students = studentsModel::where('assigned_to', $user)
+        ->with('application')
+        ->with('application.statusview as application_status')
+        ->get();
+        //dd($students);
+
+         return view('student-applications',compact('students') );
+
+    }
+   
+   public function students_application_user(Request $request, $id)
+    {    
+
+        $user_id = auth()->user()->id;
+         $students = studentsModel::where('id',$id)->with('application')->first();
+         $application_status = ApplicationStatus::all();
+
+
+         $employee = User::where('id',$user_id)->with('department.department')->first();
+          
+          foreach ($employee->department as $departmentdd){
+            foreach ($departmentdd->department as $departmentss){
+
+                
+
+                if($departmentdd->department->department_role =="visa_handling"){
+
+            $user_role= 1;
+         }else{
+            $user_role= 2;
+         }
+
+
+            }
+
+             
+          }
+          
+
+        return view('student-applications-details', compact('students', 'application_status', 'user_role'));
+
+
+      }
+
+
+       public function students_status(Request $request)
+{
+    $students = studentsModel::find($request->student_id);
+    if (!$students) {
+        // Handle the case where the student doesn't exist
+    }
+
+    $students->document_status = $request->status;
+
+    $department = deparmentModel::find($students->department);
+    $employee = User::where('user_id', $students->assigned_to)->first();
+    
+
+   if ($students->document_status === 'verified') {
+        $students->current_status = "Student document has been verified by {$employee->name} ({$department->department_name})";
+    } elseif ($students->document_status === 'pending') {
+        $students->current_status = "Student document is being verified by {$employee->name} ({$department->department_name})";
+    } elseif ($students->document_status === 'rejected') {
+        $students->current_status = "Student document has been rejected by {$employee->name} ({$department->department_name})";
+    }
+
+    $students->save();
+   
+    
+
+
+
+
+
+
+}
+
+
+
+
+       public function students_profile(Request $request)
+    {
+
+        $students = studentsModel::where('student_id',$request->id)->first();
+
+    if ($students) {
+        return response()->json(['status' => 'success', 'response' => $students]);
+    } else {
+        return response()->json(['status' => 'error', 'message' => 'Failed to load id']);
+    }
+
+     }
+
+
    public function update(Request $request, $manage_student)
     {
         //dd($request, $manage_student);
@@ -231,32 +593,70 @@ if ($request->filled('marital_status')) {
 // check if the 'nationality' attribute is not null
 if ($request->filled('Nationality')) {
     $student->nationality = $request->Nationality;
-}
+
+}   
 
 // check if the 'citizenship' attribute is not null
 if ($request->filled('citizenship')) {
     $student->citizenship = $request->citizenship;
 }
 
-// check if the 'applied_for_immigration' attribute is not null
-// if ($request->filled('applied_imigaration_status')) {
-//     $student->applied_for_immigration = $request->applied_imigaration_status;
-// }
 
-// check if the 'medical_conditions' attribute is not null
-if ($request->filled('medical_issue_status')) {
-    $student->medical_conditions = $request->medical_issue_status;
+// check if the 'another_nationality' attribute is not null
+if ($request->filled('another_nationality')) {
+    $student->another_nationality = $request->another_nationality;
+}else{
+
+    $student->another_nationality = null;
 }
 
-// check if the 'visa_refusal' attribute is not null
-// if ($request->filled('visa_refusal_status')) {
-//     $student->visa_refusal = $request->visa_refusal_status;
-// }
+// check if the 'study_another_contry' attribute is not null
+if ($request->filled('study_another_contry')) {
+    $student->study_another_contry = $request->study_another_contry;
+}else{
 
-// check if the 'convicted_of_crime' attribute is not null
-// if ($request->filled('criminal_offence_status')) {
-//     $student->convicted_of_crime = $request->criminal_offence_status;
-// }
+    $student->study_another_contry = null;
+}
+
+// check if the 'applied_for_immigration' attribute is not null
+if ($request->filled('applied_imigaration_country')) {
+    $student->applied_imigaration_country = $request->applied_imigaration_country;
+}else{
+
+    $student->applied_imigaration_country = null;
+}
+
+// check if the 'medical_conditions' attribute is not null
+if ($request->filled('medical_issue_detail')) {
+    $student->medical_conditions = $request->medical_issue_detail;
+}else{
+
+    $student->medical_conditions = null;
+}
+
+// check if the 'visa_refusal_country' attribute is not null
+if ($request->filled('visa_refusal_country')) {
+    $student->visa_refusal = $request->visa_refusal_country;
+}else{
+
+    $student->visa_refusal = null;
+}
+
+// check if the 'visa_refusal_visa_type' attribute is not null
+if ($request->filled('visa_refusal_visa_type')) {
+    $student->visa_refusal_type = $request->visa_refusal_visa_type;
+}else{
+
+    $student->visa_refusal_type = null;
+}
+
+// check if the 'criminal_offence_detail' attribute is not null
+if ($request->filled('criminal_offence_detail')) {
+    $student->convicted_of_crime = $request->criminal_offence_detail;
+}else{
+
+    $student->convicted_of_crime = null;
+}
 
 // check if the 'visa_type' attribute is not null
 if ($request->filled('visa_type')) {
@@ -271,9 +671,18 @@ if ($request->filled('referred_by')) {
     $student->manager_id = $request->referred_by;
 }
 
+ if ($request->hasFile('students_image')) {
+        foreach ($request->file('students_image') as $students_image) {
+            $students_image->move(public_path('students'), $students_image->getClientOriginalName());
+            $student->image_url = 'students/'.$students_image->getClientOriginalName();
+        }
+    }
+    
 $student->save();
- 
-        
+
+
+
+          
 
 
          $address = studentaddressModel::where('student_id', $user_id)->where('address_type',"mailing")->first();
@@ -282,8 +691,6 @@ $student->save();
           $address= new studentaddressModel;
     }
 
-
-          
 
 
                           if ($request->filled('mailing_address_1')) {
@@ -360,9 +767,56 @@ $student->save();
 
            
 
-            $passport = passportModel::where('user_id', $user_id)->first();
+           // important contacts
+
+           $important_contact = ImportantContactsModel::where('user_id',$user_id)->first();
+
+         if(!$important_contact){
+            
+            $important_contact= new ImportantContactsModel;
+             $important_contact->created_at =  Carbon::now();
+    }
+            
+            if ($request->filled('important_contact_name')) {
+                $important_contact->name = $request->important_contact_name;
+            }
+
+             if ($request->filled('important_contact_number')) {
+                $important_contact->phone = $request->important_contact_number;
+            }
+
+             if ($request->filled('important_contact_email')) {
+                $important_contact->email = $request->important_contact_email;
+            }
+
+            if ($request->filled('important_contact_relation')) {
+                $important_contact->relation_with_applicant = $request->important_contact_relation;
+            }
+            
+
+            if ($request->filled('important_contact_name')) {
+             $important_contact->updated_at =  Carbon::now();
+
+               $important_contact->user_id =$user_id;
+
+
+             $important_contact->save();
+         }
+
+
+     
+
+     
+
+
+     
+
+
+            
+            $passport = passportModel::where('user_id',$user_id)->first();
 
          if(!$passport){
+            
             $passport= new passportModel;
     }
 
@@ -380,379 +834,86 @@ $student->save();
                 $passport->expiry_date = $request->passport_expiry_date;
             }
 
+           
+
             if ($request->filled('passport_issue_country')) {
                 $passport->passport_issue_country = $request->passport_issue_country;
             }
-
-            $passport->user_id  = $user_id;
-             $passport->save();
-          
-
-           $application= new STapplicationModel;
-    
-
-
             
 
-                        if ($request->filled('request_aplication_year')) {
-                $application->year  = $request->request_aplication_year;
+             if ($request->filled('country_of_birth')) {
+                $passport->country_of_birth = $request->country_of_birth;
             }
 
-            if ($request->filled('request_aplication_intake')) {
-                $application->intake  = $request->request_aplication_intake;
+             if ($request->filled('city_of_birth')) {
+                $passport->city_of_birth = $request->city_of_birth;
             }
 
-            if ($request->filled('request_university_name')) {
-                $application->university_name  = $request->request_university_name;
-            }
+             if ($request->filled('passport_number')) {
 
-            if ($request->filled('request_course_name')) {
-                $application->course  =  $request->request_course_name;
-            }
-            $application->user_id  = $user_id;
-            $application->created_at  = Carbon::now();
-            $application->save();
+            $passport->user_id =$user_id;
+
+             $passport->save();
+         }
+
+             
+          
+
+           
 
 
 
-             $document1 = documentsModel::where('user_id', $user_id)->where('document_name', 'Std. 9th Marksheet')->first();
-    if (!$document1) {
-        $document1 = new documentsModel;
-         
-        
-    }
-   
-             $document1->user_id = $user_id;
-          $document1->updated_at = Carbon::now();
+    $document1 = documentsModel::where('user_id', $user_id)->first();
 
-           if ($request->hasFile('9th_marksheet')){
-        
-        foreach ($request->file('9th_marksheet') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"9th_Marksheet_url"} = 'students/documents/' . $filename;
-    }
-
-    
+if (!$document1) {
+    $document1 = new documentsModel;
+    $document1->user_id = $user_id;
 }
 
+$document1->updated_at = Carbon::now();
 
+$documents = [
+    '9th_marksheet',
+    '10th_marksheet',
+    '11th_marksheet',
+    '12th_marksheet',
+    'bachlors_marksheet',
+    'consolidate_marksheet',
+    'acadamic_transcript',
+    'final_degree',
+    'application_form',
+    'passport_file',
+    'statment_purpose',
+    'cv',
+    'latter_of_recomentation',
+    'english_certificate',
+    'bank_balance',
+    'financial_affidavit',
+    'gap_explanation_letter',
+    'Online_Submission_Configaration',
+    'sat_file',
+    'gre',
+    'gmat',
+    'toefl',
+    'ielts_file',
+    'pte',
+    'exempyion_certificate',
+    'additional_documents'
+];
 
-
-if ($request->hasFile('10th_marksheet')){
-        
-        foreach ($request->file('10th_marksheet') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"10th_Marksheet_url"} = 'students/documents/' . $filename;
+foreach ($documents as $document) {
+    if ($request->hasFile($document)) {
+        foreach ($request->file($document) as $file) {
+            $filename = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $file->move(public_path('students/documents'), $filename);
+            $document1->{$document . '_url'} = 'students/documents/' . $filename;
+        }
     }
-
-    
-}
-
-
-
-if ($request->hasFile('11th_marksheet')){
-        
-        foreach ($request->file('11th_marksheet') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"11th_Marksheet_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-
-if ($request->hasFile('12th_marksheet')){
-        
-        foreach ($request->file('12th_marksheet') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"12th_Marksheet_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-
-if ($request->hasFile('bachlors_marksheet')){
-        
-        foreach ($request->file('bachlors_marksheet') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"Bachlors_Individual_Marksheets_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('consolidate_marksheet')){
-        
-        foreach ($request->file('consolidate_marksheet') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"Consolidated_Marksheet_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-
-if ($request->hasFile('acadamic_transcript')){
-        
-        foreach ($request->file('acadamic_transcript') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"academic_Marksheet_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('final_degree')){
-        
-        foreach ($request->file('final_degree') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"Degree_Certificate_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('application_form')){
-        
-        foreach ($request->file('application_form') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"application_form_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('passport_file')){
-        
-        foreach ($request->file('passport_file') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"copy_of_Passport_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-
-if ($request->hasFile('statment_purpose')){
-        
-        foreach ($request->file('statment_purpose') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"statment_of_purpose_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('cv')){
-        
-        foreach ($request->file('cv') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"cv_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('latter_of_recomentation')){
-        
-        foreach ($request->file('latter_of_recomentation') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"latter_of_recommendation_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-
-if ($request->hasFile('english_certificate')){
-        
-        foreach ($request->file('english_certificate') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"english_language_certificate_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-
-if ($request->hasFile('bank_balance')){
-        
-        foreach ($request->file('bank_balance') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"bank_balance_certificate_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-
-if ($request->hasFile('financial_affidavit')){
-        
-        foreach ($request->file('financial_affidavit') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"financial_affidavit_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-
-if ($request->hasFile('gap_explanation_letter')){
-        
-        foreach ($request->file('gap_explanation_letter') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"gap_explanation_latter_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('Online_Submission_Configaration')){
-        
-        foreach ($request->file('Online_Submission_Configaration') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"online_submission_configaration_page_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-
-if ($request->hasFile('sat_file')){
-        
-        foreach ($request->file('sat_file') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"SAT_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('gre')){
-        
-        foreach ($request->file('gre') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"GRE_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('gmat')){
-        
-        foreach ($request->file('gmat') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"GMAT_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-
-if ($request->hasFile('toefl')){
-        
-        foreach ($request->file('toefl') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"TOEFL_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('ielts_file')){
-        
-        foreach ($request->file('ielts_file') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"IELTS_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('pte')){
-        
-        foreach ($request->file('pte') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"PTE_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('exempyion_certificate')){
-        
-        foreach ($request->file('exempyion_certificate') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"exemption_url"} = 'students/documents/' . $filename;
-    }
-
-    
-}
-
-if ($request->hasFile('additional_documents')){
-        
-        foreach ($request->file('additional_documents') as $file) {
-        $filename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $file->move(public_path('students/documents'), $filename);
-        $document1->{"additional_documents_url"} = 'students/documents/' . $filename;
-    }
-
-    
 }
 
 $document1->save();
+
 
 
 
@@ -772,6 +933,10 @@ $document1->save();
             //     $documnet1->save();
             // }
 
+
+
+
+
             return back();
 
 
@@ -781,6 +946,455 @@ $document1->save();
 
 
     }
+
+
+    public function newapplication(Request $request)
+{
+    $user_id = $request->student_id;
+
+    do {
+        // Generate a random application ID
+        $application_id = mt_rand(100000, 999999);
+
+        // Check if the application ID already exists
+        $existing_application = STapplicationModel::where('application_id', $application_id)->first();
+    } while ($existing_application);
+
+    $application = new STapplicationModel;
+
+    // Set the generated application ID
+    $application->application_id = $application_id;
+
+    // Set other fields based on the request
+    if ($request->filled('year')) {
+        $application->year = $request->year;
+    }
+
+    if ($request->filled('intake')) {
+        $application->intake = $request->intake;
+    }
+
+    if ($request->filled('universityName')) {
+        $application->university_name = $request->universityName;
+    }
+
+    if ($request->filled('courseName')) {
+        $application->course = $request->courseName;
+    }
+
+    $userRole = Auth::user()->role;
+
+         if ($userRole == "superadmin") {
+            
+            $manager_id_create= Auth::user()->id;
+            $referred_by_create = Auth::user()->id;
+         }elseif($userRole == "Branch_Owner"){
+
+            $manager_id_create= Auth::user()->referred_by;
+            $referred_by_create = Auth::user()->id;
+         }else{
+             
+              $manager_id_create= Auth::user()->referred_by;
+            $referred_by_create = Auth::user()->id;
+         }
+
+    $application->manager_id = $manager_id_create;
+    $application->referred_by = $referred_by_create;
+    $application->user_id = $user_id;
+    $application->created_at = Carbon::now();
+    $application->save();
+}
+
+ public function country_education(Request $request)
+{
+
+     $academic_qualification = new academic_qualificationsModal;
+
+      $academic_qualification->institution = $request->country_education;
+
+      $academic_qualification->qualification = $request->education_level;
+      $academic_qualification->student_id = $request->student_id;
+       $academic_qualification->created_at = Carbon::now();
+    $academic_qualification->save();
+
+     
+
+
+ }
+
+  public function academicQualificationshow(Request $request)
+    {
+
+     $academic_qualification = academic_qualificationsModal::where('id', $request->academic_qalification_id)->first();
+     
+
+     
+    if ($academic_qualification) {
+        return response()->json(['status' => 'success', 'response' => $academic_qualification]);
+    } else {
+        return response()->json(['status' => 'error', 'message' => 'Failed to load id']);
+    }
+
+
+
+    } 
+
+    public function academicQualificationupdate(Request $request)
+    {
+
+     $academic_qualification = academic_qualificationsModal::where('id', $request->edit_id)->first();
+     
+     if ($academic_qualification) {
+      $academic_qualification->institution = $request->country_education;
+
+      $academic_qualification->qualification = $request->education_level;
+
+       $academic_qualification->save();
+   }
+
+
+       return back();
+    
+
+
+
+    } 
+
+
+
+ public function work_experiences(Request $request)
+{
+
+
+            
+            $work_experience= new work_experienceModal;
+
+       
+       if ($request->filled('experience_company_name')) {
+               $work_experience->company_name =  $request->experience_company_name;
+            }
+       
+        if ($request->filled('experience_company_location')) {
+              $work_experience->location =  $request->experience_company_location;
+            }
+        
+         if ($request->filled('experience_company_designation')) {
+              $work_experience->job_title =  $request->experience_company_designation;
+            }
+
+             if ($request->filled('experience_company_start_date')) {
+             $work_experience->start_date =  $request->experience_company_start_date;
+            }
+       
+       if ($request->filled('experience_company_end_date')) {
+             $work_experience->end_date =  $request->experience_company_end_date;
+            }
+
+            $work_experience->created_at  = Carbon::now();
+            $work_experience->student_id  = $request->student_id;
+            $work_experience->save();
+
+}
+
+
+ public function workexperienceshow(Request $request)
+{
+
+    $work_experience = work_experienceModal::where('id', $request->work_experience_id)->first();
+
+
+    if ($work_experience) {
+        return response()->json(['status' => 'success', 'response' => $work_experience]);
+    } else {
+        return response()->json(['status' => 'error', 'message' => 'Failed to load id']);
+    }
+
+}
+
+ public function workexperienceupdate(Request $request)
+{
+     $work_experience = work_experienceModal::where('id', $request->edit_id)->first();
+
+       if ($work_experience) {
+
+              $work_experience->company_name =  $request->experience_company_name;
+               $work_experience->location =  $request->experience_company_location;
+                $work_experience->job_title =  $request->experience_company_designation;
+                 $work_experience->start_date =  $request->experience_company_start_date;
+                  $work_experience->end_date =  $request->experience_company_end_date;
+                  $work_experience->updated_at  = Carbon::now();
+                    $work_experience->save();
+
+       }
+
+       return back();
+}
+
+
+
+public function gre_test(Request $request)
+{
+    $user_id = $request->student_id;
+
+    $test_attendance = test_attendanceModel::where('student_id', $user_id)->first();
+
+    if (!$test_attendance) {
+        $test_attendance = new test_attendanceModel();
+        $test_attendance->created_at = Carbon::now();
+        $test_attendance->score = '{}'; // Set an empty JSON object as default
+    }
+
+    $existing_scores = json_decode($test_attendance->score, true) ?? [];
+    $new_scores = [
+        'gre_overall_score' => $request->gre_overall_score,
+        'gre_exam_quantitative' => $request->gre_exam_quantitative,
+        'gre_exam_verbal' => $request->gre_exam_verbal,
+        'gre_analytical_writing' => $request->gre_analytical_writing,
+        'gre_exam_date' => $request->gre_exam_date,
+    ];
+
+    // Merge the existing and new scores, updating the values if they exist in the new scores
+    $scores = array_merge($existing_scores, $new_scores);
+
+    $test_attendance->test_name = "GRE";
+    $test_attendance->score = json_encode($scores);
+    $test_attendance->updated_at = Carbon::now();
+    $test_attendance->student_id = $user_id;
+    $test_attendance->save();
+}
+
+
+public function gmat_test(Request $request)
+{
+    $user_id = $request->student_id;
+
+    $test_attendance = test_attendanceModel::where('student_id', $user_id)->first();
+
+    if (!$test_attendance) {
+        $test_attendance = new test_attendanceModel();
+        $test_attendance->created_at = Carbon::now();
+        $test_attendance->score = '{}'; // Set an empty JSON object as default
+    }
+
+    $existing_scores = json_decode($test_attendance->score, true) ?? [];
+    $new_scores = [
+        'gmat_overall_score' => $request->gmat_overall_score,
+        'gmat_date_examination' => $request->gmat_date_examination,
+        'gmat_quantitative' => $request->gmat_quantitative,
+        'gmat_verbal' => $request->gmat_verbal,
+        'gmat_analytical_writing' => $request->gmat_analytical_writing,
+        'gmat_analytical_integrated' => $request->gmat_analytical_integrated,
+    ];
+
+    // Merge the existing and new scores, updating the values if they exist in the new scores
+    $scores = array_merge($existing_scores, $new_scores);
+
+    $test_attendance->score = json_encode($scores);
+    $test_attendance->updated_at = Carbon::now();
+    $test_attendance->student_id = $user_id;
+    $test_attendance->save();
+}
+
+
+public function toefl_test(Request $request)
+{
+    $user_id = $request->student_id;
+
+    $test_attendance = test_attendanceModel::where('student_id', $user_id)->first();
+
+    if (!$test_attendance) {
+        $test_attendance = new test_attendanceModel();
+        $test_attendance->created_at = Carbon::now();
+        $test_attendance->score = '{}'; // Set an empty JSON object as default
+    }
+
+    $existing_scores = json_decode($test_attendance->score, true) ?? [];
+    $new_scores = [
+        'toefl_overall_score' => $request->toefl_overall_score,
+        'toefl_date_of_examination' => $request->toefl_date_of_examination,
+        'toefl_reading' => $request->toefl_reading,
+        'toefl_lisenting' => $request->toefl_lisenting,
+        'toefl_speaking' => $request->toefl_speaking,
+        'toefl_writing' => $request->toefl_writing,
+    ];
+
+    // Merge the existing and new scores, updating the values if they exist in the new scores
+    $scores = array_merge($existing_scores, $new_scores);
+
+    $test_attendance->score = json_encode($scores);
+    $test_attendance->updated_at = Carbon::now();
+    $test_attendance->student_id = $user_id;
+    $test_attendance->save();
+}
+
+
+public function ielts_test(Request $request)
+{
+    $user_id = $request->student_id;
+
+    $test_attendance = test_attendanceModel::where('student_id', $user_id)->first();
+
+    if (!$test_attendance) {
+        $test_attendance = new test_attendanceModel();
+        $test_attendance->created_at = Carbon::now();
+        $test_attendance->score = '{}'; // Set an empty JSON object as default
+    }
+
+    $existing_scores = json_decode($test_attendance->score, true) ?? [];
+    $new_scores = [
+        'ielts_nationality' => $request->ielts_nationality,
+        'ielts_trf_no' => $request->ielts_trf_no,
+        'ielts_date_of_exam' => $request->ielts_date_of_exam,
+        'ielts_reading' => $request->ielts_reading,
+        'ielts_listening' => $request->ielts_listening,
+        'ielts_speaking' => $request->ielts_speaking,
+        'ielts_writing' => $request->ielts_writing,
+        'ielts_center' => $request->ielts_center,
+        'ielts_overall_score' => $request->ielts_overall_score,
+    ];
+
+    // Merge the existing and new scores, updating the values if they exist in the new scores
+    $scores = array_merge($existing_scores, $new_scores);
+
+    $test_attendance->score = json_encode($scores);
+    $test_attendance->updated_at = Carbon::now();
+    $test_attendance->save();
+}
+
+
+public function pte_test(Request $request)
+{
+    $user_id = $request->student_id;
+
+    $test_attendance = test_attendanceModel::where('student_id', $user_id)->first();
+
+    if (!$test_attendance) {
+        $test_attendance = new test_attendanceModel();
+        $test_attendance->created_at = Carbon::now();
+        $test_attendance->score = '{}'; // Set an empty JSON object as default
+    }
+
+    $existing_scores = json_decode($test_attendance->score, true) ?? [];
+    $new_scores = [
+        'pte_overall_score' => $request->pte_overall_score,
+        'pte_date_of_exam' => $request->pte_date_of_exam,
+        'pte_reading' => $request->pte_reading,
+        'pte_listening' => $request->pte_listening,
+        'pte_speaking' => $request->pte_speaking,
+        'pte_writing' => $request->pte_writing,
+    ];
+
+    // Merge the existing and new scores, updating the values if they exist in the new scores
+    $scores = array_merge($existing_scores, $new_scores);
+
+    $test_attendance->score = json_encode($scores);
+    $test_attendance->updated_at = Carbon::now();
+    $test_attendance->save();
+}
+
+
+public function det_test(Request $request)
+{
+    $user_id = $request->student_id;
+
+    $test_attendance = test_attendanceModel::where('student_id', $user_id)->first();
+
+    if (!$test_attendance) {
+        $test_attendance = new test_attendanceModel();
+        $test_attendance->created_at = Carbon::now();
+        $test_attendance->score = '{}'; // Set an empty JSON object as default
+    }
+
+    $existing_scores = json_decode($test_attendance->score, true) ?? [];
+    $new_scores = [
+        'det_overall_score' => $request->det_overall_score,
+        'det_date_of_exam' => $request->det_date_of_exam,
+    ];
+
+    // Merge the existing and new scores, updating the values if they exist in the new scores
+    $scores = array_merge($existing_scores, $new_scores);
+
+    $test_attendance->score = json_encode($scores);
+    $test_attendance->updated_at = Carbon::now();
+    $test_attendance->save();
+}
+
+
+
+public function sat_test(Request $request)
+{
+    $user_id = $request->student_id;
+
+    $test_attendance = test_attendanceModel::where('student_id', $user_id)->first();
+
+    if (!$test_attendance) {
+        $test_attendance = new test_attendanceModel();
+        $test_attendance->created_at = Carbon::now();
+        $test_attendance->score = '{}'; // Set an empty JSON object as default
+    }
+
+    $existing_scores = json_decode($test_attendance->score, true) ?? [];
+    $new_scores = [
+        'sat_overall_score' => $request->sat_overall_score,
+        'sat_exam_date' => $request->sat_exam_date,
+        'sat_reading_writing' => $request->sat_reading_writing,
+        'sat_math' => $request->sat_math,
+        'sat_essay' => $request->sat_essay,
+        'sat_remarks' => $request->sat_remarks,
+    ];
+
+    // Merge the existing and new scores, updating the values if they exist in the new scores
+    $scores = array_merge($existing_scores, $new_scores);
+
+    $test_attendance->score = json_encode($scores);
+    $test_attendance->updated_at = Carbon::now();
+    $test_attendance->save();
+}
+
+
+public function act_test(Request $request)
+{
+    $user_id = $request->student_id;
+
+    $test_attendance = test_attendanceModel::where('student_id', $user_id)->first();
+
+    if (!$test_attendance) {
+        $test_attendance = new test_attendanceModel();
+        $test_attendance->created_at = Carbon::now();
+        $test_attendance->score = '{}'; // Set an empty JSON object as default
+    }
+
+    $existing_scores = json_decode($test_attendance->score, true) ?? [];
+    $new_scores = [
+        'act_overall_score' => $request->act_overall_score,
+        'act_date_of_exam' => $request->act_date_of_exam,
+        'act_reading' => $request->act_reading,
+        'act_math' => $request->act_math,
+        'act_science' => $request->act_science,
+        'act_english' => $request->act_english,
+        'act_writing' => $request->act_writing,
+    ];
+
+    // Merge the existing and new scores, updating the values if they exist in the new scores
+    $scores = array_merge($existing_scores, $new_scores);
+
+    $test_attendance->score = json_encode($scores);
+    $test_attendance->updated_at = Carbon::now();
+    $test_attendance->save();
+}
+
+
+
+public function edit_aplications(Request $request)
+{
+    $existing_application = STapplicationModel::where('id', $request->id)->first();
+
+    if( $existing_application){
+        $existing_application->delete();
+    }
+}
+
+
 
     /**
      * Remove the specified resource from storage.

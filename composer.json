@@ -9,6 +9,7 @@
         "doctrine/dbal": "^3.3",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "harvesthq/chosen": "^1.8",
         "laravel/framework": "8.83.27",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
@@ -35,6 +36,7 @@
             "Tests\\": "tests/"
         }
     },
+    
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

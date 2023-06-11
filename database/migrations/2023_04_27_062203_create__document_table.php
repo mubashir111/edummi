@@ -15,11 +15,11 @@ class CreateDocumentTable extends Migration
 {
     Schema::create('document', function (Blueprint $table) {
         $table->id();
-        $table->string('document_url');
+        $table->string('document_url')->nullable();
         $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-        $table->string('document_name');
+        $table->string('document_name')->nullable();
          $table->unsignedBigInteger('user_id');
-        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        $table->foreign('user_id')->references('id')->on('students')->onDelete('cascade');
         $table->timestamps();
     });
 }

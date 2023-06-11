@@ -1,4 +1,4 @@
-@include('layout.inner-header')
+@include('layout.header')
 
         <!-- ============================================================== -->
         <!-- Start right Content here -->
@@ -17,6 +17,60 @@
                             <button class="btn1" id="myBtn">Add New Representative</button>
                         </div>
                     </div>
+
+                     <script type="text/javascript">
+               
+                function deletefn(id){
+    
+    var id = id;
+    var url = '{{ route("representatives.destroy", ":id") }}';
+    url = url.replace(':id', id);
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You are about to delete this representative.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Delete it!',
+        cancelButtonText: 'No, cancel!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: 'DELETE', // Use DELETE method for deleting a resource
+                url: url,
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    console.log(response);
+
+                    if (response.status === 'success') {
+                        Swal.fire(
+                            'Deleted!',
+                            'representative has been deleted.',
+                            'success'
+                        );
+                        location.reload();
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            'Failed to delete news.',
+                            'error'
+                        );
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        } else {
+            $(this).prop('checked', !$(this).is(':checked'));
+        }
+    });
+}
+
+
+           </script>
                     <div id="myModal" class="modal">
 
                         <!-- Modal content -->
@@ -72,7 +126,15 @@
 
                         <div class="col-xl-3 col-sm-6">
                             <div class="card mini-stat ">
+                                  
+
                                 <div class="card-body text-center mini-stat-img">
+
+                                    <div style="text-align: right;">
+                                        <button style="border: solid 1px;border-radius: 5px;" onclick="deletefn({{$representatives->id}})" ><span
+                                                            class="mdi mdi-delete"></span></button>
+                                    </div>
+                                    
                                     <div class="">
                                         <img class="rounded-circle header-profile-user1" src="{{$representatives->url}}"
                                             alt="">
@@ -128,4 +190,4 @@
            .text-right{text-align: right;}
        </style>
 
- @include('layout.inner-footer')
+ @include('layout.footer')

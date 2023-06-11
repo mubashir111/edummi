@@ -106,6 +106,8 @@ class newsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $news = newsModel::findOrFail($id);
+     $news->delete();
+      return response()->json(['status' => 'success', 'message' => 'News has been removed ']);
     }
 }
