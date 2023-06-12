@@ -106,7 +106,7 @@
                                     </div>
                                     <div class="text-white">
                                         <h6 class="text-uppercase mb-3 font-size-16 text-white">Follow Up</h6>
-                                        <h2>123</h2>
+                                        <h2>{{$followup}}</h2>
                                     </div>
                                 </div>
                             </div>

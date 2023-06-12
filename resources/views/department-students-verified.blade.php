@@ -59,6 +59,7 @@
 
    
     <td>
+        <div>
         
         @php
         $statusCounts = $student->application->groupBy('current_status')->map->count();
@@ -79,8 +80,10 @@
 
             @endphp
 
-            <p>{{ $statusMessage }}: {{ $count }}</p>
+           
+            <span class="badge rounded-pill bg-primary">{{ $statusMessage }}: {{ $count }}</span>
         @endforeach
+    </div>
 
         
     </td>

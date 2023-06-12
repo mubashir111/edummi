@@ -3,6 +3,12 @@
 <!-- Start right Content here -->
 <!-- ============================================================== -->
 
+<style type="text/css">
+	a {
+    color: #ffffff !important;
+}
+</style>
+
 <div class="main-content">
 
 	<div class="page-content">

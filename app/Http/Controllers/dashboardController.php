@@ -22,7 +22,8 @@ class dashboardController extends Controller
         $news = newsModel::all();
 
         $representatives = representativesModel::where('status', 1)->get();
-
+           
+         $followup = leadsModdel::where('status', '!=' , 7)->count();   
 
         $userRole = auth()->user()->role;
         if ($userRole === "superadmin") {
@@ -41,6 +42,11 @@ class dashboardController extends Controller
           $application_rejected = applicationModel::where('current_status',2)->count();
 
           $offer_declined = applicationModel::where('current_status',9)->count();
+
+
+         
+
+          
  
 
         } elseif ($userRole === "Branch_Owner") {
@@ -88,7 +94,7 @@ $leads = leadsModdel::where('referred_by', auth()->user()->id)->count();
 
        
 
-          return view('home', ['news' => $news,'representatives' => $representatives ,'leads' => $leads , 'application' => $application,'DOCUMENTATION_PENDING' => $DOCUMENTATION_PENDING,'waitingforoffer' => $waitingforoffer,'application_submitted' => $application_submitted,'offer_declined' => $offer_declined,'application_submitted' => $application_submitted]);
+          return view('home', ['news' => $news,'representatives' => $representatives ,'leads' => $leads , 'application' => $application,'DOCUMENTATION_PENDING' => $DOCUMENTATION_PENDING,'waitingforoffer' => $waitingforoffer,'application_submitted' => $application_submitted,'offer_declined' => $offer_declined,'application_submitted' => $application_submitted,'followup' => $followup]);
 
     }
 

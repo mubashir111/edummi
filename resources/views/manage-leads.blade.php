@@ -478,7 +478,7 @@
         <td>{{ isset($lead->email) ? $lead->email : '' }}</td>
         <td>{{ isset($lead->phone) ? $lead->phone : '' }}</td>
         <td>{{ isset($lead->address) ? $lead->address : '' }}</td>
-        <td>{{ $lead->status}}</td>
+        <td>{{ $lead->leasstatus->name}}</td>
         <td>{{ isset($lead->current_status) ? $lead->current_status : '' }}</td>
         <td>{{ isset($lead->created_at) ? $lead->created_at : '' }}</td>
         <td>

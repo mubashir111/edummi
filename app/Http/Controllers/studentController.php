@@ -16,6 +16,7 @@ use App\Models\work_experienceModal;
 use App\Models\test_attendanceModel;
 use Carbon\Carbon;
 use App\Notifications\alertUser;
+use App\Notifications\students_create;
 use App\Models\NotificationModel;
 use Illuminate\Support\Facades\Notification;
 use App\Models\ApplicationStatus;
@@ -31,9 +32,10 @@ class studentController extends Controller
      */
     public function index()
     {    
+    
+     $user_id =  auth()->user()->id;
 
-
-            
+    $studentcreatenotification= NotificationModel::where('type','App\Notifications\add_new_student')->get();        
 
        
         $userRole = auth()->user()->role;
@@ -69,8 +71,19 @@ $students = studentsModel::where('referred_by', auth()->user()->id)->orWhere('ma
 
   $users_role =  Auth::user()->role;
 
+  NotificationModel::where('notifiable_id', $user_id)
+    ->where('type','App\Notifications\students_create')
+    ->delete();
 
-         return view('manage-students',['students'=> $students ,'departments' => $departments,'users_role' => $users_role]);
+
+        return view('manage-students', [
+    'students' => $students->sortByDesc('created_at'),
+    'departments' => $departments,
+    'users_role' => $users_role,
+    'studentcreatenotification' => $studentcreatenotification
+]);
+
+
     }
 
     /**
@@ -79,6 +92,17 @@ $students = studentsModel::where('referred_by', auth()->user()->id)->orWhere('ma
      * @return \Illuminate\Http\Response
      */
    
+
+    public function studentstatusMarkread(Request $request)
+{
+
+    NotificationModel::where('notifiable_id', $request->id)
+        ->where('type','App\Notifications\add_new_student')
+        ->delete();
+
+    return response()->json(['status' => 'success', 'message' => 'Marked as read.']);
+}
+
 
    public function departmentstudents()
     {
@@ -201,7 +225,11 @@ $students = studentsModel::where('referred_by', auth()->user()->id)->orWhere('ma
 
             // $notifyUser = $user->id;
 $notifyUser1 = $student->referred_by;
+$notifyUser2 =1;
+ $notifyUser3 = $student->id;
 $userIds = [$notifyUser1];
+
+$userIdss = [$notifyUser1,$notifyUser2];
 $message = "student id: " . $student->student_id . " is created";
 
 foreach ($userIds as $userId) {
@@ -210,6 +238,31 @@ foreach ($userIds as $userId) {
         Notification::send($user, new alertUser($user, $message));
     }
 }
+
+
+foreach ($userIdss as $userId2) {
+    $user = User::find($userId2);
+    if ($user) {
+        Notification::send($user, new students_create($user, $message));
+    }
+}
+
+
+$student_notification = new NotificationModel;
+
+$id = rand(0, 99999);
+while (NotificationModel::where('id', $id)->exists()) {
+    $id = rand(0, 99999);
+}
+
+$student_notification->id = $id;
+$student_notification->type = "App\Notifications\add_new_student";
+$student_notification->notifiable_id = $notifyUser3;
+$student_notification->save();
+
+
+           
+
 
            
          return redirect()->back()->with('success', 'Student created successfully');

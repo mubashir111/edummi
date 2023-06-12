@@ -56,6 +56,8 @@ Route::post('/student-status', [studentController::class, 'students_status'])->n
 
 Route::post('/students-profile', [studentController::class, 'students_profile'])->name('students_profile')->middleware('user_auth');
 
+Route::post('/students-create-markasread', [studentController::class, 'studentstatusMarkread'])->name('studentstatusMarkread')->middleware('role:superadmin');
+
 
 
 

@@ -2,7 +2,7 @@
     <div class="vertical-menu">
 
         <div data-simplebar class="h-100">
-
+           @php  $user_id = auth()->user()->id; @endphp
             <!--- Sidemenu -->
             <div id="sidebar-menu">
                 <!-- Left Menu Start -->
@@ -39,20 +39,30 @@
                         </a>
                     </li>
 
-
+<!-- 
                     <li class="{{ auth()->user()->role === 'Branch_Owner' ? '' : 'd-none' }}">
                     <a id="manage-francais" href="{{ route('staff.index') }}" class=" waves-effect">
                             <i class="mdi mdi-nature"></i>
                             <span>Manage Staff</span>
                         </a>
-                    </li>
+                    </li> -->
 
                     <li class="{{ auth()->user()->role === 'superadmin' || auth()->user()->role === 'major_admin' || auth()->user()->role === 'Branch_Owner' || auth()->user()->role === 'Sales_Staff' || auth()->user()->role === 'franchises_employee' ? '' : 'd-none' }}">
 
 
 
                     <a href="{{ route('manage-students.index') }}"  class=" waves-effect">
-                            <i class="mdi mdi-account"></i>
+                            <i class="mdi mdi-account">
+                                @if($unreadNotifications->where('type', 'App\Notifications\students_create')->where('notifiable_id',$user_id)->count() !== 0) 
+            
+                        <span class="badge rounded-pill bg-success float-end">
+
+                            {{$unreadNotifications->where('type', 'App\Notifications\students_create')->where('notifiable_id',$user_id)->count()}}
+                        </span>
+            
+                           @endif
+
+                            </i>
                             <span>Manage Students</span>
                         </a>
                     </li>
@@ -319,7 +329,7 @@
                       <li class="{{ auth()->user()->role === 'superadmin' || auth()->user()->role === 'major_admin' || auth()->user()->role === 'Branch_Owner' ? '' : 'd-none' }}">
     <a href="{{ route('tokens.index') }}" class="waves-effect">
         <i class="mdi mdi-nature"></i>
-        @php  $user_id = auth()->user()->id; @endphp
+        
         @if($unreadNotifications->where('type', 'App\Notifications\token_status')->count() != 0) 
             <span class="badge rounded-pill bg-success float-end">
                 {{ $unreadNotifications->where('type', 'App\Notifications\token_status')->where('notifiable_id', $user_id)->count() }}

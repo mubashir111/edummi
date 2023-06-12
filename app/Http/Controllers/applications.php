@@ -41,9 +41,9 @@ class applications extends Controller
 
         $application_status = ApplicationStatus::all();
 
-        $intakes = intakeModal::all();
+       
 
-        
+
 
         NotificationModel::where('notifiable_id', $user_id)
     ->where('type','App\Notifications\Application_status')
@@ -52,11 +52,11 @@ class applications extends Controller
 
          if($userRole === "department_employee"){
 
-             return view('manage-application-department',['students'=> $applications, 'application_status' => $application_status,'intakes'=>$intakes]);
+             return view('manage-application-department',['students'=> $applications, 'application_status' => $application_status]);
 
          }else{
            
-           return view('manage-application',['applications'=> $applications, 'application_status' => $application_status,'intakes'=>$intakes]);
+           return view('manage-application',['applications'=> $applications, 'application_status' => $application_status]);
 
          }
 

@@ -103,6 +103,62 @@
 
                 </div>
 
+<script type="text/javascript">
+    function status_change_function(id) {
+        
+        
+
+        var id = id;
+        var url = '{{ route("studentstatusMarkread") }}';
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You are about to change the status.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, update it!',
+            cancelButtonText: 'No, cancel!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        id: id
+                    },
+                    success: function (response) {
+                        console.log(response);
+
+                        if (response.status === 'success') {
+                            Swal.fire(
+                                'Updated!',
+                                'Status has been updated.',
+                                'success'
+                            );
+                            location.reload();
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Failed to update status.',
+                                'error'
+                            );
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+
+            } else {
+                $(this).prop('checked', !$(this).is(':checked'));
+            }
+        });
+
+    }
+</script>
+
+
                     <div class="row">
 
                         <div class="col-xl-12 col-sm-12">
@@ -110,7 +166,7 @@
                                 <div class="card-body mini-stat-img">
                                     <div class="table-rep-plugin">
                             <div class="table-responsive mb-0" data-pattern="priority-columns">
-                                    <table id="myTable" class="table table-responsive table-striped table-bordered" style="min-width:100%">
+                                    <table id="myTable" class="table  table-striped table-bordered" style="min-width:100%">
                                         <thead>
                                             <tr>
 
@@ -134,8 +190,20 @@
                                         @foreach ($students as $student)
                                         
                                             <tr>
-                                                <td>{{$student->student_id}}</td>
-                                                <td>{{$student->created_at}}</td>
+                                               <td>{{ $student->student_id }}
+@if(auth()->user()->role === 'superadmin' || auth()->user()->role === 'major_admin' || auth()->user()->role === 'Branch_Owner')
+    @php $student_count_id = $student->id; @endphp
+    @if($studentcreatenotification->where('notifiable_id', $student_count_id)->count() !== 0)
+        <span @if(auth()->user()->role === 'superadmin') onclick="status_change_function({{ $student_count_id }})" @endif class="badge rounded-pill bg-success float-end">
+            {{ $studentcreatenotification->where('notifiable_id', $student_count_id)->count() }}
+        </span>
+    @endif
+@endif
+</td>
+
+                                                <td>
+                                                    @php $date = date('Y-m-d', strtotime($student->created_at));@endphp
+                                                    {{$date}}</td>
 
                                                  <td>
                                                     <a class="myBtn" student_id="{{$student->student_id }}">
@@ -169,8 +237,9 @@
                                                             @endif
                                                             @if ($student->assignedto)
                                                                 @php
-                                                                    $assignedToname = $student->assignedto->user->name;
-                                                                @endphp
+    $assignedToname = $student->assignedto->user->name . " (" . $student->assignedto->user->phone_number . ")";
+@endphp
+
                                                             @else
                                                                 @php
                                                                     $assignedToname = '<a class="myBtn1" st_id="'.$student->id.'">
@@ -264,6 +333,10 @@
                                                             <option>select</option>
                                                             <option></option>
                                                         </select>
+
+
+
+                                                        
                                                     </div>
                                                 </div>
                                                 <div class="row">
