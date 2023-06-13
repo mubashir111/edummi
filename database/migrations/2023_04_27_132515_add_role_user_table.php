@@ -14,7 +14,7 @@ class AddRoleUserTable extends Migration
    public function up()
 {
     Schema::table('users', function (Blueprint $table) {
-        $table->string('referred_by')->nullable();
+        $table->unsignedBigInteger('referred_by')->nullable();
         $table->string('referred_role_type')->nullable();
         $table->unsignedBigInteger('manager_id')->nullable();
 
@@ -24,7 +24,9 @@ class AddRoleUserTable extends Migration
 
      
     });
+
 }
+
 
 public function down()
 {
