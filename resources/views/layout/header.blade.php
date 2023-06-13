@@ -3,14 +3,15 @@
 
 <head>
     <meta charset="utf-8" />
-<title>Edummi Dashboard</title>
+<title>Eduimmi Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
 <meta content="Themesdesign" name="author" />
 <!-- App favicon -->
-<link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
-<link rel="icon" type="image/png" href="{{ asset('assets/images/favicon.png') }}" sizes="32x32">
-<link rel="icon" type="image/png" href="{{ asset('assets/images/favicon.png') }}" sizes="16x16">
+
+<link rel="shortcut icon" href="{{ asset('assets/images/edue.png') }}">
+<link rel="icon" type="image/png" href="{{ asset('assets/images/edue.png') }}" sizes="32x32">
+<link rel="icon" type="image/png" href="{{ asset('assets/images/edue.png') }}" sizes="16x16">
 
 
     <!-- Bootstrap Css -->
@@ -41,8 +42,19 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.min.js"></script>
 
     <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
-</head>
 
+
+
+   
+</head>
+<style type="text/css">
+       .page-item.active .page-link {
+    z-index: 3;
+    color: #6c7c92 !important;
+     background-color: #fff !important; 
+     border-color:#6c7c92 !important;
+}
+</style>
 
 <body data-sidebar="dark">
 
@@ -180,3 +192,5 @@
     </style>
     
     @include('layout.side-bar')
+
+    

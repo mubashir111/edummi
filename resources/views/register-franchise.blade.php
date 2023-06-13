@@ -6,8 +6,9 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-    var api_token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfZW1haWwiOiJtdWJhNHNoaXJAZ21haWwuY29tIiwiYXBpX3Rva2VuIjoiWFFUZ0dyWmVpdU5jMkl3UmVTUDI0UEFTTkd0Ylk1M3BFSFMyWWlLaGJraE43Wm5rdjlmaGdBYVA1cTJ2cDdGTWt3MCJ9LCJleHAiOjE2ODY0ODQwNjd9.FXzixDkqriLxsyLVfKCwSrEzSU-mX2KVnccKSlL3U_Q";
+    @include('layout.api_generate_script');
      
+     function countryfunction(api_token){
     $.ajax({
       url: "https://www.universal-tutorial.com/api/countries",
       type: "GET",
@@ -41,6 +42,7 @@
         console.error(error);
       }
     });
+}
 
    
 
@@ -65,18 +67,23 @@
 
                                 $('#stateDropdown').empty();
 
-                                for (var i = 0; i < response.length; i++) {
-                      var state = response[i];
-                      var stateName = state.state_name;
-                      
-                      
-                      
 
-                      $('#stateDropdown').append($('<option>', {
-                        value: stateName,
-                        text: stateName
-                      }));
-                    }
+
+                             $('#stateDropdown').append($('<option>', {
+                                  value: '',
+                                  text: 'Select'
+                                }));
+
+                                for (var i = 0; i < response.length; i++) {
+                                  var state = response[i];
+                                  var stateName = state.state_name;
+
+                                  $('#stateDropdown').append($('<option>', {
+                                    value: stateName,
+                                    text: stateName
+                                  }));
+                                }
+
 
 
 
@@ -108,6 +115,11 @@
                                    
 
                                    $('#mailing_city').empty();
+
+                                    $('#mailing_city').append($('<option>', {
+                                  value: '',
+                                  text: 'Select'
+                                }));
 
                                 for (var i = 0; i < response.length; i++) {
                       var city = response[i];
@@ -247,12 +259,12 @@
 
                                 <div class="form-group col-xl-4">
                                     <label>FRANCHISE NAME</label>
-                                    <input name="franchise_name" type="text" class="form-control" placeholder="Enter Company Name" value="{{ old('franchise_name') }}">
+                                    <input name="franchise_name" type="text" class="form-control" placeholder="Enter Franchise Name" value="{{ old('franchise_name') }}">
                                 </div>
 
                                 <div class="form-group col-xl-4">
                                     <label>EMAIL ID(Admin)</label>
-                                    <input name="email" type="text" class="form-control" placeholder="Enter Location" value="{{ old('email') }}">
+                                    <input name="email" type="text" class="form-control" placeholder="Enter Your Email" value="{{ old('email') }}">
 
                                 </div>
                             </div>
@@ -260,7 +272,7 @@
                             <div class="row mt-2">
                                 <div class="form-group col-xl-4">
                                     <label>ADDRESS</label>
-                                    <textarea name="franchise_address" class="form-control" style="height: 100px;"
+                                    <textarea name="franchise_address" class="form-control" style="height: 100px;text-align: left;"
                                     placeholder="Enter Destination" required>
                                     {{ old('franchise_address') }}
                                 </textarea>
@@ -298,7 +310,7 @@
                         <div class="row mt-2">
                             <div class="form-group col-xl-4">
                                 <label>PHONE</label>
-                                <input name="franchise_number" type="number" class="form-control" placeholder="Enter Company Name" value="{{ old('franchise_number') }}" required>
+                                <input name="franchise_number" type="number" class="form-control" placeholder="Enter Franchise Number" value="{{ old('franchise_number') }}" required>
                             </div>
 
                             <div class="form-group col-xl-4">
@@ -341,10 +353,16 @@
                                             </select>
                                         </div>
                                         <div class="form-group mr-4" style="flex-basis: 70%;">
-                                            <input type="text" class="form-control" placeholder="Link" name="social_media_link[]" value="{{ old('social_media_link.'.$key) }}">
+                                            <input type="text" class="form-control" placeholder="Link" id="social_media_link" name="social_media_link[]" value="{{ old('social_media_link.'.$key) }}">
                                         </div>
                                         <div class="form-group" style="flex-basis: 10%;">
-                                            <button style="border: solid 1px;border-radius:3px;color: rgb(246, 49, 49);"><i class="mdi  mdi-18px mdi-delete"></i></button>
+                                            <script type="text/javascript">
+                                                function dltval(){
+                                                    
+                                                    $("#social_media_link").val("");
+                                                }
+                                            </script>
+                                            <button onclick="dltval()" style="border: solid 1px;border-radius:3px;color: rgb(246, 49, 49);"><i class="mdi  mdi-18px mdi-delete"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -361,10 +379,16 @@
                                             </select>
                                         </div>
                                         <div class="form-group mr-4" style="flex-basis: 70%;">
-                                            <input type="text" class="form-control" placeholder="Link" name="social_media_link[]">
+                                            <input type="text" id="social_media_link" class="form-control" placeholder="Link" name="social_media_link[]">
                                         </div>
                                         <div class="form-group" style="flex-basis: 10%;">
-                                            <button style="border: solid 1px;border-radius:3px;color: rgb(246, 49, 49);"><i class="mdi  mdi-18px mdi-delete"></i></button>
+                                            <script type="text/javascript">
+                                                function dltval(){
+                                                    
+                                                    $("#social_media_link").val("");
+                                                }
+                                            </script>
+                                            <button onclick="dltval()" style="border: solid 1px;border-radius:3px;color: rgb(246, 49, 49);"><i class="mdi  mdi-18px mdi-delete"></i></button>
                                         </div>
                                     </div>
                                 </div>

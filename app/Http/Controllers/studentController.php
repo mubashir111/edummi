@@ -40,19 +40,19 @@ class studentController extends Controller
        
         $userRole = auth()->user()->role;
         if ($userRole === "superadmin") {
-            $students = studentsModel::with('assignedto')->get();
+            $students = studentsModel::with('assignedto')->orderBy('created_at','desc')->get();
         } elseif ($userRole === "Branch_Owner") {
 
 
 $students = studentsModel::where('referred_by', auth()->user()->id)->orWhere('manager_id', auth()->user()->id)
-->with('assignedto')
+->with('assignedto')->orderBy('created_at','desc')
 ->get();
 
 
 
 
         } else{
-            $students = studentsModel::where('referred_by',auth()->user()->id)->with('assignedto')->get();
+            $students = studentsModel::where('referred_by',auth()->user()->id)->with('assignedto')->orderBy('created_at','desc')->get();
            
         }
 
@@ -77,7 +77,7 @@ $students = studentsModel::where('referred_by', auth()->user()->id)->orWhere('ma
 
 
         return view('manage-students', [
-    'students' => $students->sortByDesc('created_at'),
+    'students' => $students,
     'departments' => $departments,
     'users_role' => $users_role,
     'studentcreatenotification' => $studentcreatenotification
@@ -612,6 +612,17 @@ $student_notification->save();
             $student = studentsModel::where('student_id', $manage_student)->first();
 $user_id = $student->id;
 
+// Check if all fields are filled
+    $requiredFields = ['name', 'email', 'address_line_1', 'city', 'state', 'zip_code', 'country', 'email_type'];
+    foreach ($requiredFields as $field) {
+        if (empty($request->$field)) {
+            return redirect()->back()->with('error', 'Personal information need to fill first!');
+
+
+        }
+    }
+
+
 
 // check if the 'name' attribute is not null
 if ($request->filled('name')) {
@@ -916,7 +927,70 @@ $student->save();
 
 
 
-    $document1 = documentsModel::where('user_id', $user_id)->first();
+    
+
+
+
+
+            //  if ($request->hasFile('9th_marksheet')) {
+
+            //     $documnet1= new documentsModel;
+            //     $documnet1->user_id  = $user_id;
+            //     $documnet1->document_name  = "Std. 9th Marksheet";
+            //     $documnet1->updated_at  = Carbon::now();
+
+                
+            //     foreach ($request->file('9th_marksheet') as $students_marksheet9) {
+            //         $students_marksheet9->move(public_path('students/documents'), $students_marksheet9->getClientOriginalName());
+            //         $documnet1->document_url = 'students/documents'.$students_marksheet9->getClientOriginalName();
+            //     }
+
+            //     $documnet1->save();
+            // }
+
+
+
+
+
+            
+
+              return redirect()->back()->with('success', 'Successfully updated');
+
+
+
+
+
+
+
+    }
+
+    public function updatedocumnet(Request $request, $manage_student)
+{
+
+
+$student = studentsModel::where('student_id', $manage_student)->first();
+$user_id = $student->id;
+
+
+// check if the 'name' attribute is not null
+if ($request->filled('name')) {
+    $student->name = $request->name;
+}
+
+// check if the 'email' attribute is not null
+if ($request->filled('email')) {
+    $student->email = $request->email;
+}
+
+// check if the 'phone' attribute is not null
+if ($request->filled('phone')) {
+    $student->phone = $request->phone;
+}
+
+$student->save();
+
+
+$document1 = documentsModel::where('user_id', $user_id)->first();
 
 if (!$document1) {
     $document1 = new documentsModel;
@@ -967,38 +1041,13 @@ foreach ($documents as $document) {
 
 $document1->save();
 
+  return redirect()->back()->with('success', 'Successfully updated');
+
+
+}
 
 
 
-            //  if ($request->hasFile('9th_marksheet')) {
-
-            //     $documnet1= new documentsModel;
-            //     $documnet1->user_id  = $user_id;
-            //     $documnet1->document_name  = "Std. 9th Marksheet";
-            //     $documnet1->updated_at  = Carbon::now();
-
-                
-            //     foreach ($request->file('9th_marksheet') as $students_marksheet9) {
-            //         $students_marksheet9->move(public_path('students/documents'), $students_marksheet9->getClientOriginalName());
-            //         $documnet1->document_url = 'students/documents'.$students_marksheet9->getClientOriginalName();
-            //     }
-
-            //     $documnet1->save();
-            // }
-
-
-
-
-
-            return back();
-
-
-
-
-
-
-
-    }
 
 
     public function newapplication(Request $request)

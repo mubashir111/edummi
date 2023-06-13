@@ -5,8 +5,25 @@
 <!-- ============================================================== -->
 <div class="main-content">
 
+
+
 	<div class="page-content">
 		<div class="container-fluid">
+			<!-- Display success messages here -->
+                            @if (session('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                </button>
+                                 {{ session('success') }}
+                            </div>
+                            @endif
+                            @if (session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                </button>
+                                 {{ session('error') }}
+                            </div>
+                            @endif
 			<ul class="nav nav-pills mb-4 pf3" id="pills-tab" role="tablist">
 				<li class="nav-item" role="presentation">
 					<button class="nav-link  mr-5" id="pills-home-tab" type="button" role="tab"
@@ -27,9 +44,9 @@
 
 
 <div class="row">
-					<form method="POST" action="{{ route('manage-students.update', ['manage_student' => $students->student_id]) }}" enctype="multipart/form-data">
+					<form method="POST" action="{{ route('manage-students.updatedocumnet', ['manage_student' => $students->student_id]) }}" enctype="multipart/form-data">
 						@csrf
-						@method('PUT')
+						@method('POST')
 						<div class="col-xl-12 col-sm-12">
 							<div class="card mini-stat ">
 								<div class="card-body mini-stat-img2" style="border-radius: 5px;">
@@ -108,7 +125,9 @@
 							@endif
 
 							@if (isset($students->document->{"9th_Marksheet_url"}))
-							<a href="{{ asset($students->document->{"9th_Marksheet_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"9th_Marksheet_url"}) }}" target="_blank" class="btn btn-link">View File</a>
+
+
 							@endif
 						</div>
 					</div>
@@ -144,7 +163,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"10th_Marksheet_url"}))
-							<a href="{{ asset($students->document->{"10th_Marksheet_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"10th_Marksheet_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -178,7 +197,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"11th_Marksheet_url"}))
-							<a href="{{ asset($students->document->{"11th_Marksheet_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"11th_Marksheet_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -215,7 +234,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"12th_Marksheet_url"}))
-							<a href="{{ asset($students->document->{"12th_Marksheet_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"12th_Marksheet_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -250,7 +269,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"bachlors_marksheet_url"}))
-							<a href="{{ asset($students->document->{"bachlors_marksheet_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"bachlors_marksheet_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -284,7 +303,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"consolidate_marksheet_url"}))
-							<a href="{{ asset($students->document->{"consolidate_marksheet_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"consolidate_marksheet_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -319,7 +338,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"acadamic_transcript_url"}))
-							<a href="{{ asset($students->document->{"acadamic_transcript_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"acadamic_transcript_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -353,7 +372,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"final_degree_url"}))
-							<a href="{{ asset($students->document->{"final_degree_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"final_degree_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -387,7 +406,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"application_form_url"}))
-							<a href="{{ asset($students->document->{"application_form_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"application_form_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -421,7 +440,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"passport_file_url"}))
-							<a href="{{ asset($students->document->{"passport_file_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"passport_file_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -458,7 +477,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"statment_purpose_url"}))
-							<a href="{{ asset($students->document->{"statment_purpose_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"statment_purpose_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -494,7 +513,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"cv_url"}))
-							<a href="{{ asset($students->document->{"cv_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"cv_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -530,7 +549,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"latter_of_recomentation_url"}))
-							<a href="{{ asset($students->document->{"latter_of_recomentation_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"latter_of_recomentation_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -567,7 +586,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"english_certificate_url"}))
-							<a href="{{ asset($students->document->{"english_certificate_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"english_certificate_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -603,7 +622,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"bank_balance_url"}))
-							<a href="{{ asset($students->document->{"bank_balance_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"bank_balance_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -639,7 +658,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"financial_affidavit_url"}))
-							<a href="{{ asset($students->document->{"financial_affidavit_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"financial_affidavit_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -675,7 +694,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"gap_explanation_letter_url"}))
-							<a href="{{ asset($students->document->{"gap_explanation_letter_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"gap_explanation_letter_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -715,7 +734,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"Online_Submission_Configaration_url"}))
-							<a href="{{ asset($students->document->{"Online_Submission_Configaration_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"Online_Submission_Configaration_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -751,7 +770,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"sat_file_url"}))
-							<a href="{{ asset($students->document->{"sat_file_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"sat_file_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -787,7 +806,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"gre_url"}))
-							<a href="{{ asset($students->document->{"gre_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"gre_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -823,7 +842,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"gmat_url"}))
-							<a href="{{ asset($students->document->{"gmat_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"gmat_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -859,7 +878,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"toefl_url"}))
-							<a href="{{ asset($students->document->{"toefl_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"toefl_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -895,7 +914,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"ielts_file_url"}))
-							<a href="{{ asset($students->document->{"ielts_file_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"ielts_file_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -931,7 +950,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"pte_url"}))
-							<a href="{{ asset($students->document->{"pte_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"pte_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -967,7 +986,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"exempyion_certificate_url"}))
-							<a href="{{ asset($students->document->{"exempyion_certificate_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"exempyion_certificate_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>
@@ -1003,7 +1022,7 @@
 							<button type="submit" class="custom-button">Upload Files</button>
 							@endif
 							@if (isset($students->document->{"additional_documents_url"}))
-							<a href="{{ asset($students->document->{"additional_documents_url"}) }}" target="_blank" class="btn btn-primary">View File</a>
+							<a href="{{ asset($students->document->{"additional_documents_url"}) }}" target="_blank" class="btn btn-link">View File</a>
 							@endif
 						</div>
 					</div>

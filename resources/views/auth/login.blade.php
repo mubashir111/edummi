@@ -20,16 +20,14 @@
 <body>
   <style type="text/css">
     
-    .img-fluid {
-    max-width: 85% !important;
-    height: auto;
-}
+    
   </style>
 
 
   <section class="login">
     <div class="container">
-      <div class="row">
+      <div class="row mt-4" style="display: flex;
+    align-items: center;">
         <div class="col-lg-6 bg-imageclr">
           <img src="{{ asset('assets/images/Artboard – 1.png') }}" class="img-fluid " alt="">
         </div>

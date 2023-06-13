@@ -33,7 +33,7 @@ class EmployeeController extends Controller
         }
 
         $employees = User::where('role', $employeeRole)
-            ->where('referred_by', $user->id)
+            ->where('referred_by', $user->id)->orderBy('created_at', 'desc')
             ->get();
 
 
@@ -59,8 +59,22 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
+          
+            // Check if all fields are filled
+    $requiredFields = ['name', 'DOB', 'gender', 'marital_status', 'password', 'mailing_addres1', 'mailing_addres2', 'mailing_country', 'mailing_state', 'mailing_city' ,'mailing_pincode','permenent_address1','permenent_address2','permenent_country','permenent_state','permenent_city','permenent_pincode','permenent_nationality','permenent_citizenship','employee_number'];
+    foreach ($requiredFields as $field) {
+        if (empty($request->$field)) {
+            return redirect()->back()->with('error', 'All fields are required!');
+        }
+    }
 
-        
+
+foreach ($requiredFields as $field) {
+    if ($request->$field == "Select") {
+        return redirect()->back()->with('error', 'Invalid value selected for [country, state, or nationality]!');
+    }
+}
+
 
         // $user_id = str_pad(rand(0, 99999), 5, '0', STR_PAD_LEFT);
          $user_id = "EM" . str_pad(rand(0, 99999), 5, '0', STR_PAD_LEFT);
@@ -253,6 +267,21 @@ foreach ($userIds as $userId) {
     public function update(Request $request, $id)
     {
               
+
+                // Check if all fields are filled
+    $requiredFields = ['name', 'DOB', 'gender', 'marital_status','mailing_addres1', 'mailing_addres2', 'mailing_country', 'mailing_state', 'mailing_city' ,'mailing_pincode','permenent_address1','permenent_address2','permenent_country','permenent_state','permenent_city','permenent_pincode','permenent_nationality','permenent_citizenship','employee_number'];
+    foreach ($requiredFields as $field) {
+        if (empty($request->$field)) {
+            return redirect()->back()->with('error', 'All fields are required!');
+        }
+    }
+
+
+foreach ($requiredFields as $field) {
+    if ($request->$field == "Select") {
+        return redirect()->back()->with('error', 'Invalid value selected for [country, state, or nationality]!');
+    }
+}
            
 
                  $employee = User::where('user_id', $id)->first();

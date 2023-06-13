@@ -1,5 +1,5 @@
 
-<footer class="footer">
+<!-- <footer class="footer">
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
@@ -9,7 +9,7 @@
             </div>
         </div>
     </div>
-</footer>
+</footer> -->
 </div>
 
 </div>
@@ -27,11 +27,12 @@
     #course_finder_dropddown ul li a:hover .mdi-delete::before {
         color: #fff !important; /* Add !important to override the previous color */
     }
+
+ 
 </style>
 
-
-
-<!-- JAVASCRIPT -->
+ <!-- footer -->
+    <!-- JAVASCRIPT -->
 <script src="{{ asset('assets/libs/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
 <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
@@ -44,6 +45,9 @@
 <script src="{{ asset('assets/libs/jquery-sparkline/jquery.sparkline.min.js') }}"></script>
 <script src="https://maps.google.com/maps/api/js?key=YOUR_API_KEY"></script>
 <script src="{{ asset('assets/js/app.js') }}"></script>
+
+
+
 
 
 </body>

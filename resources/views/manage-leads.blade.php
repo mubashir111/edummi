@@ -5,6 +5,24 @@
     <!-- ============================================================== -->
     <div class="main-content">
 
+        <script type="text/javascript">
+    
+    function closeModal() {
+
+    console.log("hello");
+    $('#leadsModal').css('display', 'none');
+
+    $('#assign_btnModal').css('display', 'none');
+
+   $('#createModalshow').css('display', 'none');
+
+   $('#EditModalshow').css('display', 'none');
+
+
+   
+}
+</script>
+
         <div class="page-content">
             <div class="container-fluid">
                  <!-- Display success messages here -->
@@ -127,7 +145,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-xl-12 text-center mt-4">
+                    <div class="form-group col-xl-12 text-center mt-4 mb-4">
                         <input type="submit" class="footer-btn btn-active" value="Submit">
                     </div>
                 </div>
@@ -203,7 +221,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-xl-12 text-center mt-4">
+                    <div class="form-group col-xl-12 text-center mt-4 mb-4">
                         <input type="submit" class="footer-btn btn-active" value="Submit">
                     </div>
                 </div>
@@ -218,8 +236,8 @@
                     <!-- Modal content -->
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 style="color: #000; font-weight: bolder;">REGISTER NEW STUDENT</h5>
-                            <span class="close">&times;</span>
+                            <h5 style="color: #000; font-weight: bolder;">REGISTER NEW LEAD</h5>
+                            <span class="close" onclick="closeModal()">&times;</span>
                         </div>
                         <div class="modal-body">
 
@@ -264,7 +282,7 @@
                             
 
                             <div class="row">
-                                <div class="form-group col-xl-12 text-center mt-4">
+                                <div class="form-group col-xl-12 text-center mt-4 mb-4">
                                     <input type="submit" class="footer-btn btn-active" value="Save">
                                 </div>
                             </div>
@@ -280,8 +298,8 @@
                     <!-- Modal content -->
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 style="color: #000; font-weight: bolder;">REGISTER NEW STUDENT</h5>
-                            <span class="close">&times;</span>
+                            <h5 style="color: #000; font-weight: bolder;">EDIT LEADS</h5>
+                            <span class="close" onclick="closeModal()">&times;</span>
                         </div>
                         <div class="modal-body">
 
@@ -326,7 +344,7 @@
                             
 
                             <div class="row">
-                                <div class="form-group col-xl-12 text-center mt-4">
+                                <div class="form-group col-xl-12 text-center mt-4 mb-4">
                                     <input type="submit" class="footer-btn btn-active" value="Save">
                                 </div>
                             </div>
@@ -370,18 +388,7 @@
     }
 </script>
 
-<script type="text/javascript">
-    
-    function closeModal() {
 
-    console.log("hello");
-    $('#leadsModal').css('display', 'none');
-
-    $('#assign_btnModal').css('display', 'none');
-
-   
-}
-</script>
 
 
 <script type="text/javascript">

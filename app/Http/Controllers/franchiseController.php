@@ -24,7 +24,7 @@ class franchiseController extends Controller
     public function index()
     {  
         
-          $franchises = FranchiseModel::with('user')->get();
+          $franchises = FranchiseModel::with('user')->orderBy('created_at', 'desc')->get();
 
           // dd($franchises);
 

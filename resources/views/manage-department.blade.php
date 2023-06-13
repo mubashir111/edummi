@@ -39,6 +39,8 @@
                     </div>
                 </div>
 
+                @if(auth()->user()->role === 'superadmin' || auth()->user()->role === 'major_admin')
+
                 @if($department_role)
                     <div class="row mt-4">
                         <div class="form-group col-xl-12">
@@ -53,8 +55,10 @@
                     </div>
                 @endif
 
+                @endif
+
                 <div class="row">
-                    <div class="form-group col-xl-12 text-center mt-4">
+                    <div class="form-group col-xl-12 text-center mt-4 mb-4">
                         <input type="submit" class="footer-btn btn-active" value="Add">
                     </div>
                 </div>
@@ -335,6 +339,7 @@ $("#editModal select[name='department_role'] option").each(function () {
                             'Department has been deleted.',
                             'success'
                         );
+                        location.reload();
                     } else {
                         Swal.fire(
                             'Error!',

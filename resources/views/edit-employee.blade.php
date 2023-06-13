@@ -1,5 +1,341 @@
 @include('layout.header')
 
+ @foreach ($address as $address)
+                            @if ($address->address_type === "mailing")
+                                @php
+                                    $mailing_address = $address;
+                                @endphp
+                            @else
+                                @php
+                                    $permanent_address = $address;
+                                @endphp
+                            @endif
+                        @endforeach
+
+<script type="text/javascript">
+    $(document).ready(function() {
+       @include('layout.api_generate_script');
+
+       function countryfunction(api_token){
+
+       $.ajax({
+    url: "https://www.universal-tutorial.com/api/countries",
+    type: "GET",
+    headers: {
+        "Accept": "application/json",
+        "Authorization": api_token
+    },
+    success: function(response) {
+        // Iterate over the countries array
+        for (var i = 0; i < response.length; i++) {
+            var country = response[i];
+            var countryName = country.country_name;
+            var country_code = country.country_phone_code;
+
+            // Check if the country matches the selected country in the mailing address
+            var selected = '';
+            var selected2 ='';
+            if ("{{$mailing_address->country }}" == countryName) {
+                selected = 'selected';
+            }
+
+             if ("{{$permanent_address->country }}" == countryName) {
+                selected2 = 'selected';
+            }
+
+            $('#country_of_birth').append($('<option>', {
+                value: countryName,
+                text: countryName,
+                selected: selected
+            }));
+
+
+             $('#permenent_country').append($('<option>', {
+                        value: countryName,
+                        text: countryName,
+                        selected: selected2
+                    }));
+
+            
+        }
+    },
+    error: function(error) {
+        console.error(error);
+    }
+});
+
+
+    }
+          
+          
+       $('#permenent_country').on('change', function() {
+         var country = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/states/"+country;
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+
+                    $('#city_of_birth2').removeAttr("disabled");
+
+                    $('#city_of_birth2').empty();
+
+
+
+
+                    for (var i = 0; i < response.length; i++) {
+                        var state = response[i];
+                        var stateName = state.state_name;
+
+
+
+
+                        $('#city_of_birth2').append($('<option>', {
+                            value: stateName,
+                            text: stateName
+                        }));
+                    }
+                
+
+                citizenship(country);
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+
+
+        });
+
+
+       
+
+
+
+        $('#country_of_birth').on('change', function() {
+            var country = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/states/"+country;
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+
+                    $('#city_of_birth').removeAttr("disabled");
+
+                    $('#city_of_birth').empty();
+
+
+
+
+                    for (var i = 0; i < response.length; i++) {
+                        var state = response[i];
+                        var stateName = state.state_name;
+
+
+
+
+                        $('#city_of_birth').append($('<option>', {
+                            value: stateName,
+                            text: stateName
+                        }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+
+
+        });
+
+
+
+// Event handler for country dropdown change
+        $('#country_list').on('change', function() {
+            var country = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/states/"+country;
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+
+
+                    $('#stateDropdown').empty();
+
+                    for (var i = 0; i < response.length; i++) {
+                        var state = response[i];
+                        var stateName = state.state_name;
+
+
+
+
+                        $('#stateDropdown').append($('<option>', {
+                            value: stateName,
+                            text: stateName
+                        }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+
+
+        });
+
+
+
+        $('#stateDropdown').on('change', function() {
+            var selectedState = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/cities/"+selectedState;
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+
+
+
+                    $('#mailing_city').empty();
+
+                    for (var i = 0; i < response.length; i++) {
+                        var city = response[i];
+                        var city_name = city.city_name;
+
+
+
+
+                        $('#mailing_city').append($('<option>', {
+                            value: city_name,
+                            text: city_name
+                        }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+
+
+//permenent_country
+
+// Event handler for country dropdown change
+        $('#permenent_country').on('change', function() {
+            var country = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/states/"+country;
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+
+                    $('#permentstateDropdown').empty();
+
+                    for (var i = 0; i < response.length; i++) {
+                        var state = response[i];
+                        var stateName = state.state_name;
+
+
+
+
+                        $('#permentstateDropdown').append($('<option>', {
+                            value: stateName,
+                            text: stateName
+                        }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+
+
+        });
+
+        $('#permentstateDropdown').on('change', function() {
+            var selectedState = $(this).val();
+
+            var url = "https://www.universal-tutorial.com/api/cities/"+selectedState;
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": api_token
+                },
+                success: function(response) {
+
+                    $('#permenent_city').empty();
+                    for (var i = 0; i < response.length; i++) {
+                        var city = response[i];
+                        var city_name = city.city_name;
+
+
+
+
+                        $('#permenent_city').append($('<option>', {
+                            value: city_name,
+                            text: city_name
+                        }));
+                    }
+
+
+
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+
+
+
+    });
+</script>
 
         <!-- ============================================================== -->
         <!-- Start right Content here -->
@@ -9,7 +345,7 @@
             <div class="page-content">
                 <div class="container-fluid">
 
-                    <h5 style="color: #1F92D1;">Add New Employees</h5>
+                    <h5 style="color: #1F92D1;">Edit Employees</h5>
 
                     <p class="subhead mt-2">Personal Information</p>
                     <!-- <a href="{{ route('sendEmail') }}">Send Email</a> -->
@@ -19,9 +355,20 @@
                         @csrf
                         @method('patch')
 
-                         @if (session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
-                        @endif
+                         @if (session('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                </button>
+                                 {{ session('success') }}
+                            </div>
+                            @endif
+                            @if (session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                </button>
+                                 {{ session('error') }}
+                            </div>
+                            @endif
 
                     <div class="row">
                         <div class="col-xl-12 col-sm-12">
@@ -82,17 +429,7 @@
 
                   
 
-                                           @foreach ($address as $address)
-                            @if ($address->address_type === "mailing")
-                                @php
-                                    $mailing_address = $address;
-                                @endphp
-                            @else
-                                @php
-                                    $permanent_address = $address;
-                                @endphp
-                            @endif
-                        @endforeach
+                                          
 
 
                     <p class="subhead">Mailing Address</p>
@@ -116,19 +453,16 @@
                                     <div class="row">
                                         <div class="form-group col-xl-6">
                                             <label>COUNTRY *</label>
-                                            <Select class="form-control" name="mailing_country" required>
-                                                <option value="{{$mailing_address->country }}"selected></option>
-                                                <option value="1" ></option>
-                                                <option value="2"></option>
+                                            <Select class="form-control" id="country_of_birth" name="mailing_country" required>
+                                                
                                             </Select>
                                         </div>
 
                                         <div class="form-group col-xl-6">
                                             <label>STATE *</label>
-                                            <Select class="form-control" name="mailing_state" required>
-                                                <option value="{{$mailing_address->state }}"selected></option>
-                                                 <option value="1"></option>
-                                                <option value="2"></option>
+                                            <Select class="form-control" id="city_of_birth" name="mailing_state" required>
+                                                <option value="{{$mailing_address->state }}"selected>{{$mailing_address->state }}</option>
+                                                 
                                             </Select>
                                         </div>
                                     </div>
@@ -171,19 +505,16 @@
                                     <div class="row">
                                         <div class="form-group col-xl-6">
                                             <label>COUNTRY *</label>
-                                            <Select class="form-control" name="permenent_country" required>
-                                                <option value="{{$permanent_address->country }}"selected></option>
-                                                <option value="1"></option>
-                                                <option value="2"></option>
+                                            <Select class="form-control" id="permenent_country" name="permenent_country" required>
+                                                
                                             </Select>
                                         </div>
 
                                         <div class="form-group col-xl-6">
                                             <label>STATE *</label>
-                                            <Select class="form-control" name="permenent_state" required>
-                                                <option value="{{$permanent_address->state }}"selected></option>
-                                                 <option value="1"></option>
-                                                <option value="2"></option>
+                                            <Select class="form-control" id="city_of_birth2" name="permenent_state" required>
+                                                <option value="{{$permanent_address->state }}"selected>{{$permanent_address->state }}</option>
+                                                 
                                             </Select>
                                         </div>
                                     </div>
@@ -203,20 +534,13 @@
                                     <div class="row">
                                         <div class="form-group col-xl-6">
                                             <label>NATIONALITY *</label>
-                                            <Select class="form-control" name="permenent_nationality">
-                                               <option value="{{$permanent_address->nationality }}"selected></option>
-                                               <option value="1"></option>
-                                                <option value="2"></option>
-                                            </Select>
+                                           
+                                             <input type="text" class="form-control" placeholder="name" name="permenent_nationality" value="{{$permanent_address->nationality }}" required>
                                         </div>
 
                                         <div class="form-group col-xl-6">
                                             <label>CITIZENSHIP *</label>
-                                            <Select class="form-control" name="permenent_citizenship">
-                                                <option value="{{$permanent_address->citizenship }}" selected></option>
-                                                <option value="1"></option>
-                                                <option value="2"></option>
-                                            </Select>
+                                            <input type="text" class="form-control" placeholder="name" name="permenent_citizenship" value="{{$permanent_address->citizenship }}"required>
                                         </div>
                                     </div>
 
@@ -252,7 +576,7 @@
            .text-right{text-align: right;}
        </style>
 
-                    <footer class="footer">
+         <footer class="footer">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-xl-12">
@@ -267,7 +591,7 @@
 
                 </div>
             </div>
-
+ @include('layout.footer')
 
 
            

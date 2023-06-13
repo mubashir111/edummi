@@ -164,8 +164,7 @@
                         <div class="col-xl-12 col-sm-12">
                             <div class="card mini-stat ">
                                 <div class="card-body mini-stat-img">
-                                    <div class="table-rep-plugin">
-                            <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                    
                                     <table id="myTable" class="table  table-striped table-bordered" style="min-width:100%">
                                         <thead>
                                             <tr>
@@ -206,13 +205,13 @@
                                                     {{$date}}</td>
 
                                                  <td>
-                                                    <a class="myBtn" student_id="{{$student->student_id }}">
+                                                    <a class="myBtn" student_id="{{$student->student_id }}" style="display: flex; flex-direction: row;">
                                                         @if (!empty($student->image_url))
                                                             <img class="rounded-circle header-profile-user mr-5" src="{{ asset($student->image_url) }}" alt="" style="margin-right: 10px;">
                                                         @else
                                                             <img class="rounded-circle header-profile-user mr-5" src="assets/images/users/user-4.jpg" alt="" style="margin-right: 10px;">
                                                         @endif
-                                                        <span style="color: rgb(96, 96, 96);">{{$student->first_name}} {{$student->middle_name}} {{$student->last_name}}</span>
+                                                        <div style="color: rgb(96, 96, 96);">{{$student->first_name}} {{$student->middle_name}} {{$student->last_name}}</div>
                                                     </a>
                                                 </td>
                                                 
@@ -270,8 +269,7 @@
                                             
                                         </tbody>
                                     </table>
-                                </div>
-                            </div>
+                                
 
                                        <div id="leadsModal" class="modal">
     <!-- Modal content -->

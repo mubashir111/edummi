@@ -166,6 +166,15 @@ foreach ($userIds as $userId) {
      */
   public function update(Request $request, $id)
 {
+
+    // Check if all fields are filled
+    $requiredFields = ['user_id'];
+    foreach ($requiredFields as $field) {
+        if (empty($request->$field)) {
+            return redirect()->back()->with('error', 'Please select an employee');
+        }
+    }
+
     $user = User::where('user_id', $request->user_id)->first();
 
     $user->department_id = $id;

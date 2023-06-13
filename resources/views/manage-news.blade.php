@@ -58,7 +58,7 @@
                                 <div class="row mt-2">
                                     <div class="form-group col-xl-12">
                                         <label>DESCRIPTION *</label>
-                                        <textarea class="form-control" placeholder="Enter Last Name" name="content">
+                                        <textarea class="form-control" placeholder="Enter Last Name" name="content" style="text-align: left;">
                                             </textarea>
                                     </div>
                                 </div>

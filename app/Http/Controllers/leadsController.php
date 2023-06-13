@@ -9,6 +9,15 @@ use App\Models\User;
 use App\Models\leadsModdel;
 use App\Models\deparmentModel;
 use App\Models\LeadsstatusModal;
+use App\Models\studentsModel;
+use Carbon\Carbon;
+use App\Notifications\alertUser;
+use App\Notifications\students_create;
+use App\Models\NotificationModel;
+use Illuminate\Support\Facades\Notification;
+use App\Models\ApplicationStatus;
+use App\Models\applicationModel;
+use App\Models\intakeModal;
 
 class leadsController extends Controller
 {
@@ -35,6 +44,73 @@ class leadsController extends Controller
          return view('manage-leads',['leads'=> $leads,'departments' => $departments]);
 
     }
+
+
+
+
+
+public function convertToStudent($id)
+{
+    $leads = leadsModdel::findOrFail($id);
+
+    if ($leads) {
+        $leads->coverted_toStudent_status = 2;
+        $leads->save();
+
+        $student_id = "ST" . str_pad(rand(0, 99999), 5, '0', STR_PAD_LEFT);
+        $student_check = studentsModel::where('student_id', $student_id)->first();
+
+        if ($student_check) {
+            return $this->convertToStudent($id);
+        }
+
+        $student = new studentsModel;
+        $student->first_name = $leads->name;
+        $student->name = $leads->name;
+        $student->phone = $leads->phone;
+        $student->email = $leads->email;
+        $student->student_id = $student_id;
+        $student->referred_by  = $leads->referred_by;
+        $student->manager_id  = $leads->manager_id;
+        $student->referral_role_type = $leads->referral_role_type;
+        $student->created_at = Carbon::now();
+        $student->save();
+
+        $notifyUser1 = $student->referred_by;
+        $notifyUser2 = 1;
+        $notifyUser3 = $student->id;
+        $userIds = [$notifyUser1];
+        $userIdss = [$notifyUser1, $notifyUser2];
+        $message = "student id: " . $student->student_id . " is created";
+
+        foreach ($userIds as $userId) {
+            $user = User::find($userId);
+            if ($user) {
+                Notification::send($user, new alertUser($user, $message));
+            }
+        }
+
+        foreach ($userIdss as $userId2) {
+            $user = User::find($userId2);
+            if ($user) {
+                Notification::send($user, new students_create($user, $message));
+            }
+        }
+
+        $student_notification = new NotificationModel;
+        $id = rand(0, 99999);
+        while (NotificationModel::where('id', $id)->exists()) {
+            $id = rand(0, 99999);
+        }
+        $student_notification->id = $id;
+        $student_notification->type = "App\Notifications\add_new_student";
+        $student_notification->notifiable_id = $notifyUser3;
+        $student_notification->save();
+
+        return redirect()->back()->with('success', 'Student created successfully');
+    }
+}
+
 
 
    public function signedlead()

@@ -28,6 +28,7 @@ Route::get('/', [dashboardController::class, 'index'])->name('dashboard')->middl
 // Student Routes 
 Route::resource('manage-students', studentController::class)->middleware('role:superadmin,Branch_Owner,Sales_Staff');
 Route::post('/new-application', [studentController::class, 'newapplication'])->name('manage-students.newapplication')->middleware('user_auth');
+Route::post('/student-documentation-update/{manage_student}', [studentController::class, 'updatedocumnet'])->name('manage-students.updatedocumnet')->middleware('user_auth');
 
 Route::post('/country-education', [studentController::class, 'country_education'])->name('manage-students.country_education')->middleware('user_auth');
 
@@ -130,6 +131,10 @@ Route::post('/leads-mager-assign', [leadsController::class, 'manger_assignto'])-
 Route::post('/leads-change-status', [leadsController::class, 'statushange'])->name('lead.statuschange')->middleware('user_auth');
 Route::post('/leads-edit', [leadsController::class, 'editview'])->name('lead.editview')->middleware('user_auth');
 Route::post('/leads-update', [leadsController::class, 'storedata'])->name('lead.storedata')->middleware('user_auth');
+
+Route::post('/leads-change-to-student/{id}', [leadsController::class, 'convertToStudent'])->name('lead.convertToStudent')->middleware('user_auth');
+
+
 
 // Profile Routes
 Route::resource('profile', profileController::class)->middleware('user_auth');

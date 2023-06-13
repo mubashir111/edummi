@@ -5,7 +5,9 @@
         <!-- ============================================================== -->
         <script type="text/javascript">
   $(document).ready(function() {
-    var api_token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfZW1haWwiOiJtdWJhNHNoaXJAZ21haWwuY29tIiwiYXBpX3Rva2VuIjoiWFFUZ0dyWmVpdU5jMkl3UmVTUDI0UEFTTkd0Ylk1M3BFSFMyWWlLaGJraE43Wm5rdjlmaGdBYVA1cTJ2cDdGTWt3MCJ9LCJleHAiOjE2ODU2Nzk3NzR9.HzvJ1K659OgB8XQaMEIQqLA2OdtqjqHR0yOUKQGEQyk";
+    @include('layout.api_generate_script');
+
+    function countryfunction(api_token){
      
     $.ajax({
       url: "https://www.universal-tutorial.com/api/countries",
@@ -40,6 +42,7 @@
         console.error(error);
       }
     });
+}
 
    
 
@@ -267,10 +270,11 @@
                                     <div class="row">
                                         <div class="form-group col-xl-4">
                                             <label>ADDRESS</label>
-                                            <textarea name="franchise_address" class="form-control" style="height: 120px;"
-                                                placeholder="Enter Destination" >
-                                                {{ $franchises->address }}
-                                            </textarea>
+                                            <textarea name="franchise_address" class="form-control" style="height: 120px; text-align: left;"
+    placeholder="Enter Destination">
+    {{ $franchises->address }}
+</textarea>
+
                                         </div>
 
                                         <div class="form-group col-xl-4">
@@ -359,10 +363,16 @@
                     </select>
                 </div>
                 <div class="form-group mr-4" style="flex-basis: 70%;">
-                    <input type="text" class="form-control" placeholder="Link" name="social_media_link[]" value="{{ $socialMediaLinks[$key] ?? '' }}">
+                    <input type="text" class="form-control" placeholder="Link" id="social_media_link" name="social_media_link[]" value="{{ $socialMediaLinks[$key] ?? '' }}">
                 </div>
                 <div class="form-group" style="flex-basis: 10%;margin-left: 10px;">
-                    <button style="border: solid 1px;border-radius:3px;"><i class="mdi  mdi-18px mdi-delete"></i></button>
+                   <script type="text/javascript">
+                                                function dltval(){
+                                                    
+                                                    $("#social_media_link").val("");
+                                                }
+                                            </script>
+                                            <button onclick="dltval()" style="border: solid 1px;border-radius:3px;color: rgb(246, 49, 49);"><i class="mdi  mdi-18px mdi-delete"></i></button>
                 </div>
             </div>
         </div>
@@ -383,6 +393,12 @@
                                                 <div>
                                                     <label>COMPANY LOGO</label>
                                                 </div>
+                                                
+                                                @if(isset( $franchises->logo))
+                                                               <span>({{$franchises->logo}})</span>
+                                                            @else
+                                                                <span>( No logo uploaded )</span>
+                                                            @endif
                                                 <div class="form-group col-xl-12">
                                                     <input name="logo[]" type="file" class="form-control"  >
                                                 </div>

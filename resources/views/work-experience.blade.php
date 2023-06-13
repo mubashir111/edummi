@@ -204,17 +204,19 @@
 
 
 					<ul class="nav nav-pills mb-3 pf1" id="pills-tab" role="tablist">
-						<li class="nav-item">
+						<li class="nav-item"  role="presentation" style="width: 50%;">
 							 <button class="nav-link mr-2 active sub-btn1" id="pills-test-tab" type="button"  data-bs-toggle="tab" href="#home-1"role="tab" aria-selected="false">
 							           Add Work Experience
 							        </button>
 						</li>
-						<li class="nav-item ">
+						<li class="nav-item "  role="presentation" style="width: 50%;">
 							 <button class="nav-link mr-2  sub-btn1" id="pills-test-tab" type="button"  data-bs-toggle="tab" href="#profile-1"  role="tab" aria-selected="false">
 							           Work Experience Details
 							        </button>
 						</li>
 					</ul>
+
+					
                    
 
 

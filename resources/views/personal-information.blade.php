@@ -1,10 +1,18 @@
 @include('layout.header')
 
+
+
 <script type="text/javascript">
 	$(document).ready(function() {
-		var api_token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfZW1haWwiOiJtdWJhNHNoaXJAZ21haWwuY29tIiwiYXBpX3Rva2VuIjoiWFFUZ0dyWmVpdU5jMkl3UmVTUDI0UEFTTkd0Ylk1M3BFSFMyWWlLaGJraE43Wm5rdjlmaGdBYVA1cTJ2cDdGTWt3MCJ9LCJleHAiOjE2ODY0ODQwNjd9.FXzixDkqriLxsyLVfKCwSrEzSU-mX2KVnccKSlL3U_Q";
 
-		$.ajax({
+
+		@include('layout.api_generate_script');
+
+		
+		
+		function countryfunction(api_token){
+
+           $.ajax({
 			url: "https://www.universal-tutorial.com/api/countries",
 			type: "GET",
 			headers: {
@@ -73,6 +81,12 @@
 				console.error(error);
 			}
 		});
+
+
+		}
+
+
+		
 
 
 
@@ -296,6 +310,21 @@
 <!-- Start right Content here -->
 <!-- ============================================================== -->
 <div class="main-content">
+	<!-- Display success messages here -->
+                            @if (session('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                </button>
+                                 {{ session('success') }}
+                            </div>
+                            @endif
+                            @if (session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                </button>
+                                 {{ session('error') }}
+                            </div>
+                            @endif
 
 	<div class="page-content">
 		<div class="container-fluid">

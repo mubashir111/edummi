@@ -8,11 +8,21 @@
             <div class="page-content">
                 <div class="container-fluid">
                     <!-- Display success messages here -->
-                            @if (session('success'))
+                           @if (session('success'))
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                                 </button>
                                  {{ session('success') }}
+                            </div>
+                            <script type="text/javascript">
+                                location.reload();
+                            </script>
+                            @endif
+                            @if (session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                </button>
+                                 {{ session('error') }}
                             </div>
                             @endif
 

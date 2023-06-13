@@ -5,6 +5,20 @@
     <!-- ============================================================== -->
     <div class="main-content">
 
+         <script type="text/javascript">
+    
+    function closeModal() {
+
+    console.log("hello");
+    $('#EditModalshow').css('display', 'none');
+
+    
+
+
+   
+}
+</script>
+
         <div class="page-content">
             <div class="container-fluid">
                 <div class="row">
@@ -302,6 +316,50 @@ $("#assign_btnModal .close").on("click",function(e){
                 </div>
 
                 <script type="text/javascript">
+
+                    function convertToStudent(id){
+    
+    var id = id;
+    var url = '{{ route("lead.convertToStudent", ":id") }}';
+    url = url.replace(':id', id);
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You are about to convert this lead as student.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, convert it!',
+        cancelButtonText: 'No, cancel!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: 'POST', // Use DELETE method for deleting a resource
+                url: url,
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    console.log(response);
+
+                    
+                        Swal.fire(
+                            'Coverted!',
+                            'Student created successfully',
+                            'success'
+                        );
+                        location.reload();
+                    
+                    
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        } else {
+            $(this).prop('checked', !$(this).is(':checked'));
+        }
+    });
+}     
                
                 function deletefn(id){
     
@@ -419,8 +477,8 @@ $("#assign_btnModal .close").on("click",function(e){
                     <!-- Modal content -->
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 style="color: #000; font-weight: bolder;">REGISTER NEW STUDENT</h5>
-                            <span class="close">&times;</span>
+                            <h5 style="color: #000; font-weight: bolder;">EDIT LEAD</h5>
+                            <span class="close" onclick="closeModal()">&times;</span>
                         </div>
                         <div class="modal-body">
 
@@ -528,11 +586,12 @@ $("#assign_btnModal .close").on("click",function(e){
                                         <th>Student Email</th>
                                         <th>Phone</th>
                                         <th>Address</th>
-                                        <th>Status</th>
+                                        <th>Lead Status</th>
                                         <th>Description</th>
                                         <th>Current Status</th>
                                          @if(auth()->user()->role === 'superadmin')
                                         <th>ASSIGNED TO</th>
+                                        <th>Convert to student</th>
                                         @endif
                                         <th>Create at</th>
                                         <th>Action</th>
@@ -558,6 +617,18 @@ $("#assign_btnModal .close").on("click",function(e){
          @if(auth()->user()->role === 'superadmin') 
                                        
         <td>{{ isset($lead->assigned_to_manager) ? $lead->assigned_to_manager : 'Not assigned' }} </td>
+
+        <td>
+  @if ($lead->coverted_toStudent_status === 1)
+    
+    <button onclick="convertToStudent({{ $lead->id }})" class="ml-3" style="border: none; border-radius: 5px;background-color: #1F92D1; color: #fff;">Not converted</button>
+  @else
+    converted
+  @endif
+
+
+</td>
+
 
           @endif                                                  
         <td>{{ isset($lead->created_at) ? $lead->created_at : '' }}</td>

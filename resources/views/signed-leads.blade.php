@@ -4,6 +4,19 @@
     <!-- Start right Content here -->
     <!-- ============================================================== -->
     <div class="main-content">
+        <script type="text/javascript">
+    
+    function closeModal1() {
+
+    console.log("hello");
+    $('#EditModalshow').css('display', 'none');
+
+    
+
+
+   
+}
+</script>
 
         <div class="page-content">
             <div class="container-fluid">
@@ -305,8 +318,8 @@
                     <!-- Modal content -->
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 style="color: #000; font-weight: bolder;">REGISTER NEW STUDENT</h5>
-                            <span class="close" onclick="closeModal()">&times;</span>
+                            <h5 style="color: #000; font-weight: bolder;">EDIT LEAD</h5>
+                            <span class="close" onclick="closeModal1()">&times;</span>
                         </div>
                         <div class="modal-body">
 
