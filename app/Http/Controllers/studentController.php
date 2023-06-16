@@ -40,7 +40,10 @@ class studentController extends Controller
        
         $userRole = auth()->user()->role;
         if ($userRole === "superadmin") {
-            $students = studentsModel::with('assignedto')->orderBy('created_at','desc')->get();
+            $students = studentsModel::orderByDesc('created_at')->with('assignedto')->get();
+
+
+
         } elseif ($userRole === "Branch_Owner") {
 
 
@@ -59,29 +62,22 @@ $students = studentsModel::where('referred_by', auth()->user()->id)->orWhere('ma
         
 
 
-
         
 
 
         $user = auth()->user()->user_id;
 
- $departments = deparmentModel::where('created_by',$user)->get();
+      $departments = deparmentModel::where('created_by',$user)->get();
 
- //$employee = User::where('role',$departments->department_name)->get();
+     //$employee = User::where('role',$departments->department_name)->get();
 
-  $users_role =  Auth::user()->role;
+      $users_role =  Auth::user()->role;
 
-  NotificationModel::where('notifiable_id', $user_id)
+    NotificationModel::where('notifiable_id', $user_id)
     ->where('type','App\Notifications\students_create')
     ->delete();
 
-
-        return view('manage-students', [
-    'students' => $students,
-    'departments' => $departments,
-    'users_role' => $users_role,
-    'studentcreatenotification' => $studentcreatenotification
-]);
+   return view('manage-students',compact('students','departments','users_role','studentcreatenotification'));
 
 
     }
@@ -260,7 +256,42 @@ $student_notification->type = "App\Notifications\add_new_student";
 $student_notification->notifiable_id = $notifyUser3;
 $student_notification->save();
 
+ $url = 'https://fcm.googleapis.com/fcm/send';
 
+        $FcmToken = User::whereNotNull('device_token')->pluck('device_token')->all();
+
+        $serverKey = 'AAAAFmZ0TGk:APA91bENGTCH4lrPihgnuShyZscdAukyzTnFOxTEi6XLlA2dC3lqN8EoxyH4qbBBvr0II0DTrubRCpoiKiB7Fj_FT7bw27IATKe5EWInN6w3uA8s3zAbMCBmW6iurZxoLrjQPZV6Fe2u'; // ADD SERVER KEY HERE PROVIDED BY FCM
+
+        $data = [
+            "registration_ids" => $FcmToken,
+            "notification" => [
+                "title" =>'Created new student',
+                "body" => 'success',
+            ]
+        ];
+        $encodedData = json_encode($data);
+
+        $headers = [
+            'Authorization:key=' . $serverKey,
+            'Content-Type: application/json',
+        ];
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        // Disabling SSL Certificate support temporarly
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedData);
+        // Execute post
+        $result = curl_exec($ch);
+        if ($result === FALSE) {
+            die('Curl failed: ' . curl_error($ch));
+        }
            
 
 
@@ -605,15 +636,15 @@ $student_notification->save();
      }
 
 
-   public function update(Request $request, $manage_student)
+   public function update(Request $request,$manage_student)
     {
-        //dd($request, $manage_student);
+     
 
-            $student = studentsModel::where('student_id', $manage_student)->first();
+            $student = studentsModel::where('student_id',$manage_student)->first();
 $user_id = $student->id;
 
 // Check if all fields are filled
-    $requiredFields = ['name', 'email', 'address_line_1', 'city', 'state', 'zip_code', 'country', 'email_type'];
+    $requiredFields = ['name', 'email','phone', 'date_of_birth'];
     foreach ($requiredFields as $field) {
         if (empty($request->$field)) {
             return redirect()->back()->with('error', 'Personal information need to fill first!');
@@ -729,6 +760,8 @@ if ($request->filled('visa_type')) {
 
 $student->referred_by = Auth::user()->id;
 $student->referral_role_type = Auth::user()->role;
+
+$student->updated_at = Carbon::now();
 
 // check if the 'manager_id' attribute is not null
 if ($request->filled('referred_by')) {

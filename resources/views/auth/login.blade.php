@@ -5,8 +5,10 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -68,6 +70,7 @@
               <div class="offset-1 col-lg-10">
                 <input type="password" autocomplete="new-password" class="inp px-3" name="password" placeholder="Enter Password">
               </div>
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <a href="{{ route('resetpassword') }}" class="frgt-pswd">Forget Password?</a>
               
             </div>

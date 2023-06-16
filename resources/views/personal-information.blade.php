@@ -311,7 +311,12 @@
 <!-- ============================================================== -->
 <div class="main-content">
 	<!-- Display success messages here -->
-                            @if (session('success'))
+                           
+
+	<div class="page-content">
+		<div class="container-fluid">
+
+			 @if (session('success'))
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                                 </button>
@@ -325,9 +330,6 @@
                                  {{ session('error') }}
                             </div>
                             @endif
-
-	<div class="page-content">
-		<div class="container-fluid">
 			
 			<ul class="nav nav-pills mb-4 pf3" id="pills-tab" role="tablist">
 				<li class="nav-item" role="presentation">

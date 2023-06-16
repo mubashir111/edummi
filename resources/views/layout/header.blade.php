@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="utf-8" />
@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
 <meta content="Themesdesign" name="author" />
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <!-- App favicon -->
 
 <link rel="shortcut icon" href="{{ asset('assets/images/edue.png') }}">
@@ -28,7 +29,7 @@
 
     <!-- select2 -->
     <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
-
+    
     <!-- DataTables -->
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
@@ -43,7 +44,10 @@
 
     <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
 
-
+    
+    <script type="text/javascript">
+        
+    </script>
 
    
 </head>
@@ -57,6 +61,85 @@
 </style>
 
 <body data-sidebar="dark">
+
+     <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase.js"></script>
+   
+   
+
+<script>
+  var firebaseConfig = {
+     apiKey: "AIzaSyBBxWIZ6gz8dCtanNzWWWdCdtUP7EB-wl4",
+            authDomain: "eduimmicrm.firebaseapp.com",
+            projectId: "eduimmicrm",
+            storageBucket: "eduimmicrm.appspot.com",
+            messagingSenderId: "96208178281",
+            appId: "1:96208178281:web:db00bca679bfee277be6f8",
+            measurementId: "G-GJL90N8E57"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const messaging = firebase.messaging();
+
+  function requestPermission() {
+    console.log('Requesting permission...');
+    Notification.requestPermission().then((permission) => {
+      if (permission === 'granted') {
+        console.log('Notification permission granted.');
+        //startFCM();
+      } else {
+        console.log('Notification permission denied.');
+      }
+    }).catch((error) => {
+      console.error('Error requesting notification permission:', error);
+    });
+  }
+
+  function startFCM() {
+            messaging.requestPermission().then(function () {
+                    return messaging.getToken()
+                })
+                .then(function (response) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        url: '{{ route("store.token") }}',
+                        type: 'POST',
+                        data: {
+                            token: response
+                        },
+                        dataType: 'JSON',
+                        success: function (response) {
+                            alert('Token stored.');
+                        },
+                        error: function (error) {
+                            alert(error);
+                        },
+                    });
+                }).catch(function (error) {
+                alert(error);
+            });
+        }
+  messaging.onMessage(function(payload) {
+    const title = payload.notification.title;
+    const options = {
+      body: payload.notification.body,
+      icon: payload.notification.icon
+    };
+
+    new Notification(title, options);
+
+    // Reload the page after displaying the notification
+    location.reload();
+  });
+
+  // Request permission when the page loads
+  requestPermission();
+</script>
 
 <!-- Begin page -->
 <div id="layout-wrapper">
@@ -167,7 +250,7 @@
                 <div class="dropdown d-inline-block">
                     <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img class="rounded-circle header-profile-user" src="{{asset(auth()->user()->profile_url)}}"
+                        <img class="rounded-circle header-profile-user" src="{{auth()->user()->profile_url?asset(auth()->user()->profile_url):asset('assets/images/edue.png')}}"
                              alt="Header Avatar">
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">

@@ -30,6 +30,7 @@ class User extends Authenticatable
          'user_id',
          'profile_url',
          'status',
+         'device_token'
     ];
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 

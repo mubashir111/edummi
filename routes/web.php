@@ -18,6 +18,7 @@ use App\Http\Controllers\MailController;
 use App\Http\Controllers\state_list_Controller;
 use App\Http\Controllers\ApplicationChatController;
 use App\Http\Controllers\leadsController;
+use App\Http\Controllers\NotificationSendController;
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/resetpassword', [AuthController::class, 'resetpassword'])->name('resetpassword');
@@ -195,6 +196,12 @@ Route::get('/application-detail-view', [studentController::class, 'application_s
 Route::post('/sate_list', [state_list_Controller::class, 'getStateList'])->name('state_list')->middleware('user_auth');
 
 Route::post('/district_list', [state_list_Controller::class, 'getdistrictList'])->name('district_list')->middleware('user_auth');
+
+// push notification
+Route::group(['middleware' => 'auth'],function(){
+    Route::post('/store-token', [NotificationSendController::class, 'updateDeviceToken'])->name('store.token');
+    Route::post('/send-web-notification', [NotificationSendController::class, 'sendNotification'])->name('send.web-notification');
+});
 
 
 

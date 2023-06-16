@@ -1,6 +1,13 @@
 @include('layout.header')
 
+ 
 
+   
+
+
+    
+
+  
 
         <!-- ============================================================== -->
         <!-- Start right Content here -->
@@ -10,6 +17,8 @@
             <div class="page-content">
                 <div class="container-fluid">
                     <h5>Dashboard</h5>
+                    
+
 
                     <div class="row">
                         <div class="col-xl-3 col-sm-6">
@@ -132,8 +141,8 @@
                      <h6>Departments You Are in</h6>
                     <div class="row">
 
-                       
-                        
+
+
                            @foreach (auth()->user()->department as $department)
                         <div class="col-4">
                             <div class="card mini-stat ">
@@ -143,7 +152,7 @@
                                             <h6>{{$department->department->department_name}}</h6>
                                         </div>
                                         <div class="col-sm-2">
-                                            
+
                                                     <a href="{{ route('departments.show', ['department' => $department->department->id]) }}"><input type="button" class="btn-view-member"
                                                     value="View Memebers"></a>
                                                 </td>
@@ -153,7 +162,7 @@
                             </div>
                         </div>
                          @endforeach
-                       
+
                     </div>
 
                     @endif
@@ -181,15 +190,15 @@
                         </div>
                          @endforeach
 
-                        
 
-                      
 
-                       
+
+
+
 
                     </div>
 
-                    
+
                     <!-- end row -->
                     <div class="row">
 
@@ -214,7 +223,7 @@
 
                         @endforeach
 
-                       
+
 
                     </div>
 
