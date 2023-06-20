@@ -125,11 +125,12 @@ foreach ($userIds as $userId) {
 
         $departments = deparmentModel::where('id', $id)->first();
         $employee = User::where('role',"department_employee")->where('referred_by',$user_id)->get();
+        $departments_id = $departments->id;
 
        $userRole = auth()->user()->role;
         if ($userRole === "superadmin") {
 
-             $employee = User::where('role',"department_employee")->where('status',"active")->get();
+             $employee = User::where('role',"department_employee")->where('status',"active")->where('referred_by',$user_id)->get();
         }elseif ($userRole === "Branch_Owner") {
 
             $employee = User::where('role',"franchises_employee")->where('status',"active")->where('referred_by',$user_id)->get();
@@ -142,7 +143,7 @@ foreach ($userIds as $userId) {
     
        
 
-        return view('department-employee', ['department' => $departments,'employee' => $employee,'users' => $users ]);
+        return view('department-employee', ['department' => $departments,'employee' => $employee,'users' => $users,'departments_id' =>$departments_id ]);
         
     }
 

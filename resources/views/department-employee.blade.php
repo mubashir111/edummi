@@ -40,6 +40,8 @@
                     </div>
                     
 
+
+
                     <div id="myModal" class="modal">
 
                         <!-- Modal content -->
@@ -60,18 +62,33 @@
                                         <div class="mm-dropdown">
                                             <div class="textfirst">Select<img src="" width="10" height="10" class="down" /></div>
                                             <ul>
-                                                @foreach ($employee as $employee)
-                                                <li class="input-option" data-value="{{ $employee->user_id }}">
+
+                                                @foreach ($employee as $employee1)
+                                                
+                                               
+
+                                               
+
+                                                
+
+                                              
+                                                @if($employee1->department_id != $departments_id)
+                                               
+
+                                                <li class="input-option" data-value="{{ $employee1->user_id }}">
                                                     <div class="row">
                                                         <div class="col-xl-1">
-                                                            <img class="rounded-circle header-profile-user" src="{{asset($employee->profile_url)}}" alt="Header Avatar">
+                                                            <img class="rounded-circle header-profile-user" src="{{asset($employee1->profile_url)}}" alt="Header Avatar">
                                                         </div>
                                                         <div class="col-xl-11">
-                                                            <label>{{ $employee->name }}</label>
-                                                            <div>{{ $employee->user_id }}</div>
+                                                            <label>{{ $employee1->name }}</label>
+                                                            <div>{{ $employee1->user_id }}</div>
                                                         </div>
                                                     </div>
                                                 </li>
+
+                                                @endif
+                                                
                                                 @endforeach
                                             </ul>
                                             <input type="hidden" class="option" name="user_id" value="" />

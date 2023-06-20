@@ -450,8 +450,6 @@
                                             <label>COUNTRY *</label>
                                             <Select class="form-control" name="mailing_country" id="country_of_birth" required>
                                                 <option>Select</option>
-                                                <option value="1"></option>
-                                                <option value="2"></option>
                                             </Select>
                                         </div>
 
@@ -459,8 +457,6 @@
                                             <label>STATE *</label>
                                             <Select class="form-control" id="city_of_birth" name="mailing_state" required>
                                                 <option>Select</option>
-                                                 <option value="1"></option>
-                                                <option value="2"></option>
                                             </Select>
                                         </div>
                                     </div>

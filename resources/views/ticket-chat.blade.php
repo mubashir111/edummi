@@ -37,6 +37,16 @@
                 <img src="../{{ $message->attachment }}" class="img-fluid" style="max-width:420px;">
                 @endif
             </div>
+            
+            @if($message->status ==="rejected")
+            <span class="badge  bg-success">Verified</span>
+
+            @elseif($message->status ==="pending")
+             <span  class="badge  bg-warning">Pending</span></a>
+             @elseif($message->status ==="verified")
+             <span  class="badge  bg-success">Verified</span>
+
+            @endif
         </div>
     </div>
 
