@@ -65,10 +65,14 @@
      <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase.js"></script>
-   
-   
+     <!-- Firebase Core -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+    <!-- Other Firebase services -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+    <!-- Add more Firebase service scripts as needed -->
 
-<script>
+   
+ <script>
   var firebaseConfig = {
      apiKey: "AIzaSyBBxWIZ6gz8dCtanNzWWWdCdtUP7EB-wl4",
             authDomain: "eduimmicrm.firebaseapp.com",
@@ -87,7 +91,6 @@
     Notification.requestPermission().then((permission) => {
       if (permission === 'granted') {
         console.log('Notification permission granted.');
-        //startFCM();
       } else {
         console.log('Notification permission denied.');
       }
@@ -96,34 +99,7 @@
     });
   }
 
-  function startFCM() {
-            messaging.requestPermission().then(function () {
-                    return messaging.getToken()
-                })
-                .then(function (response) {
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
-                    });
-                    $.ajax({
-                        url: '{{ route("store.token") }}',
-                        type: 'POST',
-                        data: {
-                            token: response
-                        },
-                        dataType: 'JSON',
-                        success: function (response) {
-                            alert('Token stored.');
-                        },
-                        error: function (error) {
-                            alert(error);
-                        },
-                    });
-                }).catch(function (error) {
-                alert(error);
-            });
-        }
+ 
   messaging.onMessage(function(payload) {
     const title = payload.notification.title;
     const options = {
@@ -133,13 +109,12 @@
 
     new Notification(title, options);
 
-    // Reload the page after displaying the notification
-    location.reload();
   });
 
   // Request permission when the page loads
   requestPermission();
 </script>
+
 
 <!-- Begin page -->
 <div id="layout-wrapper">

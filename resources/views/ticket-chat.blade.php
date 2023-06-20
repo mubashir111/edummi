@@ -15,7 +15,7 @@
                             <section class="msger">
                                 <header class="msger-header">
                                     <div class="msger-header-title">
-                                        LOREM IPSUM
+                                        TICKET CHAT
                                     </div>
                                     <div class="msger-header-options">
                                         <span><i class='fas fa-bars'></i></span>

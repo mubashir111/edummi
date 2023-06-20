@@ -1,5 +1,7 @@
 @include('layout.header')
 
+
+
     <!-- ============================================================== -->
     <!-- Start right Content here -->
     <!-- ============================================================== -->
@@ -526,7 +528,7 @@ var btn = document.getElementById("myBtn");
 var closeBtn1 = document.getElementById("closeModal1");
 var closeBtn2 = document.getElementById("closeModal2");
 
-
+document.addEventListener('DOMContentLoaded', function() {
 
 btn.onclick = function() {
   modal.style.display = "block";
@@ -549,6 +551,7 @@ window.onclick = function(event) {
   }
 };
 
+})
 $('.edit-btn').on('click',function(e) {
     e.preventDefault();
     var staffId = $(this).data('id');

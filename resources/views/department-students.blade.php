@@ -40,8 +40,16 @@
                                             <tr>
                                                 <td>{{$i++}}</td>
                                                 <td>{{$student->student_id}}</td>
-                                                <td><img class="rounded-circle header-profile-user mr-3"
-                                                        src="{{asset($student->image_url)}}" alt="" style="margin-right: 9px;"><span
+                                                <td>
+                                                     @if (!empty($student->image_url))
+                                                            <img class="rounded-circle header-profile-user mr-3"
+                                                        src="{{asset($student->image_url)}}" alt="" style="margin-right: 9px;">
+                                                        @else
+                                                            <img class="rounded-circle header-profile-user mr-3"
+                                                        src="{{ asset('assets/images/users/user.png') }}" alt="" style="margin-right: 9px;">
+                                                        @endif
+
+                                                    <span
                                                         style="color: rgb(96, 96, 96);">{{$student->first_name}} {{$student->middle_name}} {{$student->last_name}}</span></td>
                                                 
                                                  

@@ -296,6 +296,8 @@ public function store(Request $request){
 
         $FcmToken = User::whereNotNull('device_token')->pluck('device_token')->all();
 
+
+
         $serverKey = 'AAAAFmZ0TGk:APA91bENGTCH4lrPihgnuShyZscdAukyzTnFOxTEi6XLlA2dC3lqN8EoxyH4qbBBvr0II0DTrubRCpoiKiB7Fj_FT7bw27IATKe5EWInN6w3uA8s3zAbMCBmW6iurZxoLrjQPZV6Fe2u'; // ADD SERVER KEY HERE PROVIDED BY FCM
 
         $data = [

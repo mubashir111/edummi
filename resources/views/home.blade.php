@@ -1,24 +1,27 @@
 @include('layout.header')
 
- 
 
    
-
-
-    
-
-  
 
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
+        <script type="text/javascript">
+            // app.js or relevant JavaScript file
+
+navigator.serviceWorker.addEventListener('message', event => {
+    if (event.data && event.data.action === 'reload') {
+        // Reload the page
+        location.reload();
+    }
+});
+
+        </script>
         <div class="main-content">
 
             <div class="page-content">
                 <div class="container-fluid">
                     <h5>Dashboard</h5>
-                    
-
 
                     <div class="row">
                         <div class="col-xl-3 col-sm-6">

@@ -18,6 +18,57 @@
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 </head>
 
+ <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase.js"></script>
+     <!-- Firebase Core -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+    <!-- Other Firebase services -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+    <!-- Add more Firebase service scripts as needed -->
+
+<script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyBBxWIZ6gz8dCtanNzWWWdCdtUP7EB-wl4",
+            authDomain: "eduimmicrm.firebaseapp.com",
+            projectId: "eduimmicrm",
+            storageBucket: "eduimmicrm.appspot.com",
+            messagingSenderId: "96208178281",
+            appId: "1:96208178281:web:db00bca679bfee277be6f8",
+            measurementId: "G-GJL90N8E57"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        function startFCM() {
+            messaging.requestPermission().then(function () {
+                    return messaging.getToken()
+                })
+                .then(function (response) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    
+                    $("input[name=csrf_token]").val(response);
+                }).catch(function (error) {
+                alert(error);
+              
+            });
+        }
+        messaging.onMessage(function (payload) {
+            const title = payload.notification.title;
+            const options = {
+                body: payload.notification.body,
+                icon: payload.notification.icon,
+            };
+            new Notification(title, options);
+        });
+
+        startFCM();
+    </script>
+
 
 <body>
   <style type="text/css">
@@ -70,7 +121,7 @@
               <div class="offset-1 col-lg-10">
                 <input type="password" autocomplete="new-password" class="inp px-3" name="password" placeholder="Enter Password">
               </div>
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="csrf_token" value="">
               <a href="{{ route('resetpassword') }}" class="frgt-pswd">Forget Password?</a>
               
             </div>

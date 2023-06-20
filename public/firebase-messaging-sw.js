@@ -23,11 +23,17 @@ messaging.setBackgroundMessageHandler(function(payload) {
     console.log("Message received.", payload);
     const title = "Hello world is awesome";
     const options = {
-        body: "Your notificaiton message .",
+        body: "Your notification message.",
         icon: "/firebase-logo.png",
     };
-    return self.registration.showNotification(
-        title,
-        options,
-    );
+    self.registration.showNotification(title, options);
+
+    return self.clients.matchAll({ type: 'window' }).then(clients => {
+        for (const client of clients) {
+            client.navigate(client.url);
+        }
+    });
+
+    
 });
+
