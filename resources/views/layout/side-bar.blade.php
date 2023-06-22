@@ -257,6 +257,14 @@
                 </ul>
                 </li>
 
+
+                    <li class="{{ auth()->user()->role === 'superadmin' || auth()->user()->role === 'major_admin' ? '' : 'd-none' }}">
+                    <a id="manage-francais" href="{{ route('course_finder_list') }}" class=" waves-effect">
+                             <i class="mdi mdi-view-dashboard"></i>
+                            <span>Manage Course Finder</span>
+                        </a>
+                    </li>
+
            <script>
     $(".course_finder_dlt_btn").on("click", function(e) {
         e.preventDefault();

@@ -49,7 +49,7 @@
                 </div>
                 <div class="row text-right">
                     <div class="col-xl-12 text-right">
-                         <button class="btn1" id="ledads_btn">
+                            <button class="btn1" id="ledads_btn">
                                 <input id="file-input" type="file" style="display: none;">
                                 <i class="mdi mdi-16px mdi-plus-circle-outline"></i>Upload leads
                             </button>

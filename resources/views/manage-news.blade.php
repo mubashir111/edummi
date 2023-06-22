@@ -17,7 +17,7 @@
                                     News</span></button>
                         </div>
                     </div>
-                   <!--  <form method="POST" action="{{ route('excel') }}" enctype="multipart/form-data">
+<!-- <form method="POST" action="{{ route('excel') }}" enctype="multipart/form-data">
     @csrf
     <input type="file" name="csv_file">
     <button type="submit">Upload</button>
@@ -28,6 +28,11 @@
     <input type="file" name="csv_file">
     <button type="submit">Upload</button>
 </form> -->
+
+
+
+
+ 
 
                     <div id="myModal" class="modal">
 

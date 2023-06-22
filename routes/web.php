@@ -19,6 +19,7 @@ use App\Http\Controllers\state_list_Controller;
 use App\Http\Controllers\ApplicationChatController;
 use App\Http\Controllers\leadsController;
 use App\Http\Controllers\NotificationSendController;
+use App\Http\Controllers\CsvConverController;
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/resetpassword', [AuthController::class, 'resetpassword'])->name('resetpassword');
@@ -147,6 +148,10 @@ Route::get('course-finder-view/{url}',[CourseFinder::class, 'coursefinder_view']
 
 Route::post('courserfinderdelete',[CourseFinder::class, 'courserfinderdelete'])->name('courserfinderdelete')->middleware('user_auth');
 
+// course finder list
+Route::get('course-finder-list', [CourseFinder::class,'institute_list_details'])->name('course_finder_list')->middleware('user_auth');
+
+
 // Representatives Routes
 Route::resource('representatives', representatives::class)->middleware('user_auth');
 
@@ -157,6 +162,7 @@ Route::resource('manage-applications', applications::class)->middleware('role:su
 Route::post('/excel', [ExcelController::class, 'upload'])->name('excel')->middleware('user_auth');
 Route::post('/state_excel', [ExcelController::class, 'pincodeupload'])->name('state_excel')->middleware('user_auth');
 Route::post('/leads', [ExcelController::class, 'leadsupload'])->name('leads.upload')->middleware('user_auth');
+Route::post('/leads_uplod', [ExcelController::class, 'upload_institution'])->name('institution_excel')->middleware('user_auth');
 
 
 // Mail Routes
@@ -202,6 +208,10 @@ Route::group(['middleware' => 'auth'],function(){
     Route::post('/store-token', [NotificationSendController::class, 'updateDeviceToken'])->name('store.token');
     Route::post('/send-web-notification', [NotificationSendController::class, 'sendNotification'])->name('send.web-notification');
 });
+
+//conver to csv 
+
+Route::get('/institute-csv', [CsvConverController::class, 'convertToCsv'])->name('institute_csv')->middleware('user_auth');
 
 
 

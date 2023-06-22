@@ -11,6 +11,7 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "harvesthq/chosen": "^1.8",
         "laravel/framework": "8.83.27",
+        "laravel/passport": "^10.4",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "league/csv": "^9.9"

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\course_finderModel;
 use App\Notifications\alertUser;
 use App\Models\NotificationModel;
+use App\Models\InstitutionCreateModel;
 use Illuminate\Support\Facades\Notification;
 use App\Models\User;
 
@@ -16,7 +17,7 @@ class CourseFinder extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response 
      */ 
     public function index()
     {
@@ -24,6 +25,13 @@ class CourseFinder extends Controller
            $course_finder = course_finderModel::where('status',1)->get();
 
             return view('course-finder',['course_finder' => $course_finder]);
+    }
+
+     public function institute_list_details()
+    {
+           $institute_lists = InstitutionCreateModel::all();
+
+            return view('institute-list',['institute_list' => $institute_lists]);
     }
 
     public function coursefinder_view($url)

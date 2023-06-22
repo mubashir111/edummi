@@ -17,6 +17,12 @@ navigator.serviceWorker.addEventListener('message', event => {
 });
 
         </script>
+        <style type="text/css">
+            .card-body {
+    
+    min-height: 138px;
+}
+        </style>
         <div class="main-content">
 
             <div class="page-content">
